@@ -9,7 +9,7 @@ const Header = () => {
     return (
         <div className="fixed flex w-full items-center p-2">
             <div className="flex w-18 items-center justify-center">
-                <Spotify className="h-8 w-8 cursor-pointer" />
+                <Spotify className="h-8 w-8 cursor-pointer text-(--text-color)" />
             </div>
             <div className="flex items-center">
                 <div className="ml-2">
@@ -25,7 +25,7 @@ const Header = () => {
                 <TextButton text="Download" href="#" />
                 <div className="mx-4 h-7 w-[1px] bg-(--text-color)"></div>
                 <TextButton text="Sign up" href="#" />
-                <Button px="12" py="3" mx="2" />
+                <Button className="ml-2 px-8 py-3" text="Log in" />
             </div>
         </div>
     );
