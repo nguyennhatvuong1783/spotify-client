@@ -5,10 +5,13 @@ import {
     ResizablePanelGroup,
 } from "../ui/resizable";
 import LeftMenu from "../LeftMenu/LeftMenu";
-import Content from "../Content/Content";
 import Chat from "../Chat/Chat";
 
-const MainContent = () => {
+interface MainContentProps {
+    Content: React.ReactNode;
+}
+
+const MainContent: React.FC<MainContentProps> = ({ Content }) => {
     const isMobile = false;
 
     return (
@@ -30,7 +33,7 @@ const MainContent = () => {
 
                 {/* Main content */}
                 <ResizablePanel defaultSize={isMobile ? 80 : 55}>
-                    <Content />
+                    {Content}
                 </ResizablePanel>
 
                 <ResizableHandle className="w-2 rounded-lg bg-black transition-colors" />

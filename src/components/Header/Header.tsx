@@ -4,13 +4,16 @@ import Textbox from "../Textbox/Textbox";
 import Button from "../Buttons/Button";
 import TextButton from "../Buttons/TextButton";
 import ButtonHome from "../Buttons/ButtonHome";
+import Link from "next/link";
 
 const Header = () => {
     return (
         <div className="fixed flex w-full items-center p-2">
-            <div className="flex w-18 items-center justify-center">
-                <Spotify className="h-8 w-8 cursor-pointer text-(--text-color)" />
-            </div>
+            <Link href={"/"}>
+                <div className="flex w-18 items-center justify-center">
+                    <Spotify className="h-8 w-8 cursor-pointer text-(--text-color)" />
+                </div>
+            </Link>
             <div className="flex items-center">
                 <div className="ml-2">
                     <ButtonHome />

@@ -1,8 +1,8 @@
 import React from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import { Library } from "../icons/Icons";
-import Footer from "../Footer/Footer";
 import YourLibrary from "../YourLibrary/YourLibrary";
+import SubFooter from "../Footer/SubFooter";
 
 const LeftMenu = () => {
     return (
@@ -18,7 +18,7 @@ const LeftMenu = () => {
                 <ScrollArea className="h-[calc(100vh-350px)] px-2 pb-2">
                     <YourLibrary />
                 </ScrollArea>
-                <Footer />
+                <SubFooter />
             </div>
         </div>
     );

@@ -1,25 +1,27 @@
 import React from "react";
 import { ScrollArea } from "../ui/scroll-area";
 import ItemAlbum from "../ItemAlbum/ItemAlbum";
+import Footer from "../Footer/Footer";
+import Link from "next/link";
 
 const Content = () => {
     return (
         <div className="h-full rounded-md bg-(image:--gradient-color)">
-            <ScrollArea className="h-[calc(100vh-100px)] px-3">
+            <ScrollArea className="h-[calc(100vh-70px)] px-3">
                 <div className="my-5 mb-10 overflow-hidden">
                     <div className="mb-2 flex items-end justify-between px-3 font-bold">
-                        <a
-                            href="#"
+                        <Link
+                            href="/album/1"
                             className="text-2xl decoration-2 hover:underline"
                         >
                             Trending songs
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            href="/album/1"
                             className="text-sm text-(--secondary-text-color) hover:underline"
                         >
                             Show all
-                        </a>
+                        </Link>
                     </div>
                     <div className="flex">
                         <ItemAlbum />
@@ -29,6 +31,30 @@ const Content = () => {
                         <ItemAlbum />
                     </div>
                 </div>
+                <div className="my-5 mb-10 overflow-hidden">
+                    <div className="mb-2 flex items-end justify-between px-3 font-bold">
+                        <Link
+                            href="/album/2"
+                            className="text-2xl decoration-2 hover:underline"
+                        >
+                            Trending songs
+                        </Link>
+                        <Link
+                            href="/album/2"
+                            className="text-sm text-(--secondary-text-color) hover:underline"
+                        >
+                            Show all
+                        </Link>
+                    </div>
+                    <div className="flex">
+                        <ItemAlbum />
+                        <ItemAlbum />
+                        <ItemAlbum />
+                        <ItemAlbum />
+                        <ItemAlbum />
+                    </div>
+                </div>
+                <Footer />
             </ScrollArea>
         </div>
     );
