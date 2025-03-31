@@ -14,6 +14,7 @@
         var(--secondary-color),
         var(--main-color) 50%
     );
+    --gradient-color-login: linear-gradient(#2a2a2a, var(--primary-color));
     --green-color: #1ed760;
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);

@@ -28,7 +28,11 @@ const Header = () => {
                 <TextButton text="Download" href="#" />
                 <div className="mx-4 h-7 w-[1px] bg-(--text-color)"></div>
                 <TextButton text="Sign up" href="#" />
-                <Button className="ml-2 px-8 py-3" text="Log in" />
+                <Button
+                    className="ml-2 px-8 py-3"
+                    text="Log in"
+                    href="/login"
+                />
             </div>
         </div>
     );
