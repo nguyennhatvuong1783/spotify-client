@@ -72,7 +72,7 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-            <div className="mb-10 py-10 text-sm text-(--secondary-text-color)">
+            <div className="mb-14 py-10 text-sm text-(--secondary-text-color)">
                 <span>© 2025 Spotify AB</span>
             </div>
         </div>

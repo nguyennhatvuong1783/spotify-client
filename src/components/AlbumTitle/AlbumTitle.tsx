@@ -1,51 +1,97 @@
 import Image from "next/image";
 import ButtonPlay from "../Buttons/ButtonPlay";
-import AutoTextSize from "../AutoTextSize/AutoTextSize";
+import { AddIcon, ListIcon, MoreIcon } from "../icons/Icons";
+import Link from "next/link";
 
-const AlbumTitle = () => {
+interface AlbumTitleProps {
+    title?: string;
+    artist?: string;
+    artistId?: string;
+    albumImgUrl?: string;
+    artistImgUrl?: string;
+    totalSongs?: number;
+    totalDuration?: number;
+    isArtist?: boolean;
+}
+
+const AlbumTitle: React.FC<AlbumTitleProps> = ({
+    title = "Title",
+    artist = "Artist",
+    artistId = "1",
+    albumImgUrl = "https://i.scdn.co/image/ab67616d00001e028bdbdf691a5b791a5afb515b",
+    artistImgUrl = "https://i.scdn.co/image/ab6761610000f178b9c9e23c646125922719489e",
+    totalSongs = 0,
+    totalDuration = 0,
+    isArtist = false,
+}) => {
     return (
-        <div className="flex max-w-full flex-col">
-            <div className="flex bg-[linear-gradient(#71a0a0,#073b3b)] p-6 shadow-[0px_0px_100px_40px_#073b3b]">
-                <div className="mr-6 flex flex-col justify-end">
+        <div className="flex min-w-full flex-col">
+            <div className="relative flex p-6">
+                <Image
+                    src={albumImgUrl}
+                    alt="Image"
+                    fill
+                    className="absolute z-0 overflow-hidden object-cover shadow-[0px_0px_40px_rgba(0,0,0,0.4)] blur-3xl brightness-95"
+                />
+                <div className="z-10 mr-6 flex flex-col justify-end">
                     <Image
-                        src="https://i.scdn.co/image/ab67616d00001e028bdbdf691a5b791a5afb515b"
+                        src={albumImgUrl}
                         alt="Image"
                         width={221}
                         height={221}
-                        className="aspect-square overflow-hidden rounded-sm object-cover shadow-[0px_0px_40px_rgba(0,0,0,0.4)]"
+                        className="aspect-square cursor-pointer overflow-hidden rounded-sm object-cover shadow-[0px_0px_40px_rgba(0,0,0,0.4)] transition-all duration-200 hover:scale-102"
                     />
                 </div>
-                <div className="flex flex-1 flex-col justify-end gap-2 truncate">
-                    <p className="text-sm font-medium">Album</p>
-                    {/* <h1 className="line  text-[clamp(10px,1.9em,6em)] leading-none font-extrabold">
-                        BẬT NÓ LÊN
-                    </h1> */}
-                    <AutoTextSize text="eternal sunshine deluxe: brighter days ahead" />
-                    <div className="mt-3 flex items-center gap-1">
+                <div className="z-10 flex flex-1 flex-col justify-end gap-2">
+                    <p className="text-sm font-medium">
+                        {isArtist ? "Artist" : "Album"}
+                    </p>
+                    <h1 className="cursor-default text-6xl/tight font-extrabold">
+                        {title}
+                    </h1>
+                    {/* <AutoTextSize text="BẬT NÓ LÊN" /> */}
+                    <div className="mt-3 flex items-center gap-1 truncate">
                         <Image
-                            src="https://i.scdn.co/image/ab6761610000f1784bf18316dd0bd42ea5f9f8ec"
+                            src={artistImgUrl}
                             alt="Image"
                             width={24}
                             height={24}
                             className="aspect-square overflow-hidden rounded-full object-cover"
                         />
-                        <p className="text-sm font-bold">SOOBIN</p>
-                        <ul className="ml-4 flex list-disc gap-5 text-sm font-medium text-[#71a0a0] brightness-130">
-                            <li className="-indent-[6px]">2024</li>
+                        {!isArtist && (
+                            <Link
+                                href={`/artist/${artistId}`}
+                                className="text-sm font-bold hover:underline"
+                            >
+                                {artist}
+                            </Link>
+                        )}
+                        <ul className="ml-4 flex list-disc gap-5 text-sm font-medium opacity-80">
+                            <li className="-indent-[6px]">2025</li>
                             <li className="-indent-[6px]">
-                                10 songs, 33 min 27 sec
+                                {`${totalSongs} songs, ${Math.floor(totalDuration / 60)} min ${totalDuration % 60} sec`}
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div>
-                <div>
-                    <ButtonPlay />
-                    <div></div>
-                    <div></div>
+            <div className="flex items-center justify-between p-6">
+                <div className="flex items-center gap-6">
+                    <ButtonPlay
+                        className="p-4"
+                        // onClick={handleClickButtonPlay}
+                    />
+                    <div>
+                        <AddIcon className="h-8 w-8 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:text-(--text-color) active:scale-100 active:text-(--secondary-text-color)" />
+                    </div>
+                    <div>
+                        <MoreIcon className="h-8 w-8 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:text-(--text-color) active:scale-100 active:text-(--secondary-text-color)" />
+                    </div>
                 </div>
-                <div></div>
+                <div className="flex cursor-pointer items-center gap-2 px-2 text-(--secondary-text-color) hover:text-(--text-color)">
+                    <span className="pb-0.5 text-sm font-medium">List</span>
+                    <ListIcon className="h-4 w-4" />
+                </div>
             </div>
         </div>
     );
