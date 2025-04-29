@@ -1,9 +1,9 @@
 import React from "react";
 import { Spotify } from "../icons/Icons";
-import Textbox from "../Textbox/Textbox";
+import SearchInput from "../TextInput/SearchInput";
 import Button from "../Buttons/Button";
 import TextButton from "../Buttons/TextButton";
-import ButtonHome from "../Buttons/ButtonHome";
+import HomeButton from "../Buttons/HomeButton";
 import Link from "next/link";
 
 const Header = () => {
@@ -16,9 +16,9 @@ const Header = () => {
             </Link>
             <div className="flex flex-1 items-center">
                 <div className="ml-2">
-                    <ButtonHome />
+                    <HomeButton />
                 </div>
-                <Textbox />
+                <SearchInput />
             </div>
             <div className="flex flex-1 items-center justify-center gap-2 font-bold">
                 <TextButton text="Premium" href="#" />

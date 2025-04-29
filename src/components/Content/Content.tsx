@@ -1,5 +1,5 @@
 import React from "react";
-import ItemAlbum from "../ItemAlbum/ItemAlbum";
+import ContextItem from "../ContextItem/ContextItem";
 import Link from "next/link";
 
 const Content = () => {
@@ -21,27 +21,27 @@ const Content = () => {
                     </Link>
                 </div>
                 <div className="flex">
-                    <ItemAlbum
+                    <ContextItem
                         title="DANCING IN THE DARK"
                         artist="SOOBIN"
                         url="/album/1"
                     />
-                    <ItemAlbum
+                    <ContextItem
                         title="DANCING IN THE DARK"
                         artist="SOOBIN"
                         url="/album/2"
                     />
-                    <ItemAlbum
+                    <ContextItem
                         title="DANCING IN THE DARK"
                         artist="SOOBIN"
                         url="/album/3"
                     />
-                    <ItemAlbum
+                    <ContextItem
                         title="DANCING IN THE DARK"
                         artist="SOOBIN"
                         url="/album/4"
                     />
-                    <ItemAlbum
+                    <ContextItem
                         title="DANCING IN THE DARK"
                         artist="SOOBIN"
                         url="/album/5"
@@ -64,11 +64,11 @@ const Content = () => {
                     </Link>
                 </div>
                 <div className="flex">
-                    <ItemAlbum />
-                    <ItemAlbum />
-                    <ItemAlbum />
-                    <ItemAlbum />
-                    <ItemAlbum />
+                    <ContextItem />
+                    <ContextItem />
+                    <ContextItem />
+                    <ContextItem />
+                    <ContextItem />
                 </div>
             </div>
         </>

@@ -1,6 +1,6 @@
 import { Clock } from "../icons/Icons";
 
-const ListSongs = () => {
+const SongList = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const songs: any[] = [];
 
@@ -48,4 +48,4 @@ const ListSongs = () => {
     );
 };
 
-export default ListSongs;
+export default SongList;

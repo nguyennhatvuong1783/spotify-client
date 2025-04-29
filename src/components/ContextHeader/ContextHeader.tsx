@@ -1,9 +1,9 @@
 import Image from "next/image";
-import ButtonPlay from "../Buttons/ButtonPlay";
+import PlayButton from "../Buttons/PlayButton";
 import { AddIcon, ListIcon, MoreIcon } from "../icons/Icons";
 import Link from "next/link";
 
-interface AlbumTitleProps {
+interface ContextHeaderProps {
     title?: string;
     artist?: string;
     artistId?: string;
@@ -14,7 +14,7 @@ interface AlbumTitleProps {
     isArtist?: boolean;
 }
 
-const AlbumTitle: React.FC<AlbumTitleProps> = ({
+const ContextHeader: React.FC<ContextHeaderProps> = ({
     title = "Title",
     artist = "Artist",
     artistId = "1",
@@ -77,7 +77,7 @@ const AlbumTitle: React.FC<AlbumTitleProps> = ({
             </div>
             <div className="flex items-center justify-between p-6">
                 <div className="flex items-center gap-6">
-                    <ButtonPlay
+                    <PlayButton
                         className="p-4"
                         // onClick={handleClickButtonPlay}
                     />
@@ -97,4 +97,4 @@ const AlbumTitle: React.FC<AlbumTitleProps> = ({
     );
 };
 
-export default AlbumTitle;
+export default ContextHeader;

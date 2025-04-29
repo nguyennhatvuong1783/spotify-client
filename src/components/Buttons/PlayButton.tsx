@@ -2,11 +2,11 @@
 import React from "react";
 import { Play } from "../icons/Icons";
 
-interface ButtonPlayProps {
+interface PlayButtonProps {
     className?: string;
 }
 
-const ButtonPlay: React.FC<ButtonPlayProps> = ({ className = "" }) => {
+const PlayButton: React.FC<PlayButtonProps> = ({ className = "" }) => {
     return (
         <button
             className={`z-10 cursor-pointer rounded-full bg-(--green-color) p-3 text-(--primary-color) transition duration-300 hover:scale-104 hover:brightness-105 active:scale-100 active:brightness-80 ${className}`}
@@ -19,4 +19,4 @@ const ButtonPlay: React.FC<ButtonPlayProps> = ({ className = "" }) => {
     );
 };
 
-export default ButtonPlay;
+export default PlayButton;

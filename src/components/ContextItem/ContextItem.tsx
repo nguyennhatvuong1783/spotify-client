@@ -3,15 +3,15 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ButtonPlay from "../Buttons/ButtonPlay";
+import PlayButton from "../Buttons/PlayButton";
 
-interface ItemAlbumProps {
+interface ContextItemProps {
     title?: string;
     artist?: string;
     url?: string;
 }
 
-const ItemAlbum: React.FC<ItemAlbumProps> = ({
+const ContextItem: React.FC<ContextItemProps> = ({
     title = "title",
     artist = "artist",
     url = "#",
@@ -31,7 +31,7 @@ const ItemAlbum: React.FC<ItemAlbumProps> = ({
                     height={500}
                     className="aspect-square overflow-hidden rounded-md object-cover"
                 />
-                <ButtonPlay className="absolute right-2 bottom-0 opacity-0 shadow-[0px_8px_15px_rgba(0,0,0,0.4)] group-hover:-translate-y-2 group-hover:opacity-100" />
+                <PlayButton className="absolute right-2 bottom-0 opacity-0 shadow-[0px_8px_15px_rgba(0,0,0,0.4)] group-hover:-translate-y-2 group-hover:opacity-100" />
             </div>
 
             <Link
@@ -56,4 +56,4 @@ const ItemAlbum: React.FC<ItemAlbumProps> = ({
     );
 };
 
-export default ItemAlbum;
+export default ContextItem;

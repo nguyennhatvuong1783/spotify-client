@@ -1,8 +1,8 @@
 "use client";
-import { Song } from "@/types/music";
+import { Song } from "@/types/song";
 import { createContext, useCallback, useState } from "react";
 
-type PlayMode = "single" | "album" | "playlist" | "artist";
+type PlayMode = "song" | "album" | "playlist" | "artist";
 type RepeatMode = "none" | "all" | "one";
 
 type PlayerContextType = {
@@ -10,7 +10,7 @@ type PlayerContextType = {
     currentSong: Song | null;
     isPlaying: boolean;
     queue: Song[];
-    originalQueue: Song[];
+    shuffleQueue: Song[];
     currentIndex: number;
     playMode: PlayMode;
     repeatMode: RepeatMode;
@@ -18,7 +18,7 @@ type PlayerContextType = {
     currentTime: number;
     currentContext: {
         // Thông tin context hiện tại (album/playlist/artist)
-        id?: string;
+        id?: number;
         type?: PlayMode;
         name?: string;
     };
@@ -26,7 +26,12 @@ type PlayerContextType = {
     // Actions
     playSong: (song: Song) => void;
     playPlaylist: (
-        playlist: { id: string; name: string; songs: Song[] },
+        playlist: {
+            id: number;
+            name: string;
+            playMode: PlayMode;
+            songs: Song[];
+        },
         startFrom?: number,
     ) => void;
     togglePlayPause: () => void;
@@ -47,14 +52,15 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [queue, setQueue] = useState<Song[]>([]);
-    const [originalQueue, setOriginalQueue] = useState<Song[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [shuffleQueue, setShuffleQueue] = useState<Song[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
-    const [playMode, setPlayMode] = useState<PlayMode>("single");
+    const [playMode, setPlayMode] = useState<PlayMode>("song");
     const [repeatMode, setRepeatMode] = useState<RepeatMode>("none");
     const [isShuffled, setIsShuffled] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [currentContext, setCurrentContext] = useState<{
-        id?: string;
+        id?: number;
         type?: PlayMode;
         name?: string;
     }>({});
@@ -65,7 +71,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     const playSong = useCallback((song: Song) => {
         setQueue([song]);
         setCurrentIndex(0);
-        setPlayMode("single");
+        setPlayMode("song");
         setCurrentContext({});
         setIsPlaying(true);
     }, []);
@@ -73,15 +79,20 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     // Phát một playlist
     const playPlaylist = useCallback(
         (
-            playlist: { id: string; name: string; songs: Song[] },
+            playlist: {
+                id: number;
+                name: string;
+                playMode: PlayMode;
+                songs: Song[];
+            },
             startFrom = 0,
         ) => {
             setQueue(playlist.songs);
             setCurrentIndex(startFrom);
-            setPlayMode("playlist");
+            setPlayMode(playlist.playMode);
             setCurrentContext({
                 id: playlist.id,
-                type: "playlist",
+                type: playlist.playMode,
                 name: playlist.name,
             });
             setIsPlaying(true);
@@ -101,20 +112,23 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         });
     }, []);
 
-    const removeFromQueue = useCallback((song: Song) => {
-        setQueue((prev) => {
-            const newQueue = prev.filter((s) => s.id !== song.id);
-            // Nếu bài hát hiện tại bị xóa, cập nhật lại currentIndex
-            if (currentSong?.id === song.id) {
-                setCurrentIndex((prevIndex) =>
-                    prevIndex >= newQueue.length
-                        ? newQueue.length - 1
-                        : prevIndex,
-                );
-            }
-            return newQueue;
-        });
-    }, []);
+    const removeFromQueue = useCallback(
+        (song: Song) => {
+            setQueue((prev) => {
+                const newQueue = prev.filter((s) => s.id !== song.id);
+                // Nếu bài hát hiện tại bị xóa, cập nhật lại currentIndex
+                if (currentSong?.id === song.id) {
+                    setCurrentIndex((prevIndex) =>
+                        prevIndex >= newQueue.length
+                            ? newQueue.length - 1
+                            : prevIndex,
+                    );
+                }
+                return newQueue;
+            });
+        },
+        [currentSong],
+    );
 
     // Xóa toàn bộ queue
     const clearQueue = useCallback(() => {
@@ -135,6 +149,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Bài tiếp theo (xử lý khác nhau tùy chế độ phát)
     const playNext = useCallback(() => {
+        if (!isPlaying) setIsPlaying(true);
         setCurrentIndex((prev) => {
             // Nếu đang ở chế độ repeat một bài
             if (repeatMode === "one") return prev;
@@ -143,7 +158,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             if (prev < queue.length - 1) return prev + 1;
 
             // Nếu hết queue
-            if (repeatMode === "all") {
+            if (repeatMode === "all" || playMode === "song") {
                 // Lặp lại từ đầu
                 return 0;
             } else {
@@ -152,13 +167,14 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
                 return prev;
             }
         });
-    }, [repeatMode, queue]);
+    }, [repeatMode, queue, playMode, isPlaying]);
 
     // Bài trước đó
     const playPrevious = useCallback(() => {
+        if (!isPlaying) setIsPlaying(true);
         setCurrentIndex((prev) => {
             // Nếu đang ở đầu queue và chế độ lặp tất cả
-            if (prev <= 0 && repeatMode === "all") {
+            if ((prev <= 0 && repeatMode === "all") || playMode === "song") {
                 return queue.length - 1;
             }
             // Nếu không phải bài đầu tiên
@@ -166,22 +182,21 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             // Mặc định trở về đầu
             return 0;
         });
-    }, [repeatMode, queue]);
+    }, [repeatMode, queue, playMode, isPlaying]);
 
     // Seek đến thời gian cụ thể
     const seekTo = useCallback((time: number) => {
         setCurrentTime(time);
-        // Có thể thêm logic điều khiển audio element ở đây
     }, []);
 
     // Bật/tắt shuffle
     const toggleShuffle = useCallback(() => {
         if (isShuffled) {
             // Nếu đang shuffle -> trở về queue gốc
-            setQueue(originalQueue);
+            setQueue(shuffleQueue);
             // Tìm lại vị trí bài hát hiện tại trong queue gốc
             if (currentSong) {
-                const newIndex = originalQueue.findIndex(
+                const newIndex = shuffleQueue.findIndex(
                     (song) => song.id === currentSong.id,
                 );
                 setCurrentIndex(newIndex >= 0 ? newIndex : 0);
@@ -213,7 +228,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             }
         }
         setIsShuffled(!isShuffled);
-    }, [isShuffled, queue, originalQueue, currentSong]);
+    }, [isShuffled, queue, shuffleQueue, currentSong]);
 
     // Chuyển đổi chế độ repeat
     const toggleRepeat = useCallback(() => {
@@ -238,7 +253,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
                 currentSong,
                 isPlaying,
                 queue,
-                originalQueue,
+                shuffleQueue: shuffleQueue,
                 currentIndex,
                 playMode,
                 repeatMode,

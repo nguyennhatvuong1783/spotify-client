@@ -1,11 +1,11 @@
-import BtnTxtImg from "@/components/Buttons/BtnTxtImg";
+import TextIconButton from "@/components/Buttons/TextIconButton";
 import {
     Apple,
     FacebookColor,
     Google,
     Spotify,
 } from "@/components/icons/Icons";
-import TextboxLogin from "@/components/Textbox/TextboxLogin";
+import TextInput from "@/components/TextInput/TextInput";
 import Link from "next/link";
 
 export default function Signup() {
@@ -20,7 +20,7 @@ export default function Signup() {
                 </div>
                 <form className="w-full">
                     <div className="flex flex-col gap-2">
-                        <TextboxLogin
+                        <TextInput
                             text="Email address"
                             placeholder="name@domain.com"
                         />
@@ -49,19 +49,19 @@ export default function Signup() {
                 </div>
                 <div className="my-2 flex w-full flex-col">
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Sign up with Google"
                             Icon={<Google className="h-6 w-6" />}
                         />
                     </div>
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Sign up with Facebook"
                             Icon={<FacebookColor className="h-6 w-6" />}
                         />
                     </div>
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Sign up with Apple"
                             Icon={<Apple className="h-6 w-6" />}
                         />

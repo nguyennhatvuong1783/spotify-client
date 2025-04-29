@@ -4,7 +4,7 @@ import React from "react";
 import { Home, HomeOutline } from "../icons/Icons";
 import { usePathname, useRouter } from "next/navigation";
 
-const ButtonHome = () => {
+const HomeButton = () => {
     const currentPath = usePathname();
     const router = useRouter();
 
@@ -22,4 +22,4 @@ const ButtonHome = () => {
     );
 };
 
-export default ButtonHome;
+export default HomeButton;

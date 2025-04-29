@@ -1,11 +1,11 @@
 import React from "react";
 
-interface TextboxLoginProps {
+interface TextInputProps {
     text?: string;
     placeholder?: string;
 }
 
-const TextboxLogin: React.FC<TextboxLoginProps> = ({
+const TextInput: React.FC<TextInputProps> = ({
     text = "Label",
     placeholder = "",
 }) => {
@@ -25,4 +25,4 @@ const TextboxLogin: React.FC<TextboxLoginProps> = ({
     );
 };
 
-export default TextboxLogin;
+export default TextInput;

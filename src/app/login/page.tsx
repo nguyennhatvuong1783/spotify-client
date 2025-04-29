@@ -1,11 +1,11 @@
-import BtnTxtImg from "@/components/Buttons/BtnTxtImg";
+import TextIconButton from "@/components/Buttons/TextIconButton";
 import {
     Apple,
     FacebookColor,
     Google,
     Spotify,
 } from "@/components/icons/Icons";
-import TextboxLogin from "@/components/Textbox/TextboxLogin";
+import TextInput from "@/components/TextInput/TextInput";
 import Link from "next/link";
 
 export default function Login() {
@@ -22,32 +22,32 @@ export default function Login() {
                 </div>
                 <div className="flex w-full flex-col justify-center md:w-auto">
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Continue with Google"
                             Icon={<Google className="h-6 w-6" />}
                         />
                     </div>
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Continue with Facebook"
                             Icon={<FacebookColor className="h-6 w-6" />}
                         />
                     </div>
                     <div>
-                        <BtnTxtImg
+                        <TextIconButton
                             text="Continue with Apple"
                             Icon={<Apple className="h-6 w-6" />}
                         />
                     </div>
                     <div>
-                        <BtnTxtImg text="Continue with phone number" />
+                        <TextIconButton text="Continue with phone number" />
                     </div>
                 </div>
                 <hr className="my-9 w-full border-[#292929]" />
                 <form className="w-full md:w-auto">
                     <div className="flex flex-col justify-center">
                         <div>
-                            <TextboxLogin
+                            <TextInput
                                 text="Email or username"
                                 placeholder="Email or username"
                             />
