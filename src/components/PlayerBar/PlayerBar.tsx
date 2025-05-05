@@ -154,7 +154,7 @@ const PlayerBar = () => {
                     <>
                         <Image
                             src={
-                                currentSong.album?.image_url ??
+                                currentSong.album?.cover_image ??
                                 "https://www.shyamh.com/images/blog/music.jpg"
                             }
                             alt="Image"

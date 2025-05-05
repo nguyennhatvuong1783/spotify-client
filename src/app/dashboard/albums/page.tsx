@@ -37,9 +37,6 @@ const AlbumsManager = () => {
     const filteredAlbums = data?.data?.filter(
         (album) =>
             album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            album.description
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
             album.artist.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
@@ -156,9 +153,6 @@ const AlbumsManager = () => {
                             <TableHead className="text-(--green-color)">
                                 Number of Song
                             </TableHead>
-                            <TableHead className="text-(--green-color)">
-                                Description
-                            </TableHead>
                             <TableHead className="text-right text-(--green-color)">
                                 Active
                             </TableHead>
@@ -173,8 +167,7 @@ const AlbumsManager = () => {
                                     <TableCell>{album.id}</TableCell>
                                     <TableCell>{album.title}</TableCell>
                                     <TableCell>{album.artist.name}</TableCell>
-                                    <TableCell>{album.songs_count}</TableCell>
-                                    <TableCell>{album.description}</TableCell>
+                                    <TableCell>{album.total_song}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button

@@ -14,7 +14,7 @@ export default function PlaylistPage() {
     const { user } = useAuth();
 
     const { data, error, isLoading } = useSWR<ApiResponse<Playlist>>(
-        `playlists/${id}`,
+        `music/playlists/${id}/`,
         fetcher,
     );
 
@@ -26,7 +26,7 @@ export default function PlaylistPage() {
                 <>
                     <ContextHeader
                         key={data.data.id}
-                        title={data.data.title}
+                        title={data.data.name}
                         artist={user?.username}
                         PriImgUrl={
                             data.data.image_url ||
@@ -42,12 +42,12 @@ export default function PlaylistPage() {
                             0,
                         )}
                         type="playlist"
-                        contextId={data.data.id}
+                        contextId={data.data.id ?? 0}
                         songs={data.data.songs ?? []}
                     />
                     <ListSong
-                        contextId={data.data.id}
-                        title={data.data.title}
+                        contextId={data.data.id ?? 0}
+                        title={data.data.name}
                         type="playlist"
                         songs={data.data.songs}
                     />

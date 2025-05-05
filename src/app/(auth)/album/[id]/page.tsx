@@ -12,7 +12,7 @@ export default function AlbumPage() {
     const { id } = params;
 
     const { data, error, isLoading } = useSWR<ApiResponse<Album>>(
-        `albums/${id}`,
+        `music/albums/${id}/`,
         fetcher,
     );
 
@@ -26,20 +26,25 @@ export default function AlbumPage() {
                         key={data.data.id}
                         title={data.data.title}
                         artist={data.data.artist.name}
-                        PriImgUrl={data.data.image_url}
-                        SecImgUrl={data.data.artist.image_url}
-                        totalSongs={data.data.songs_count}
-                        totalDuration={data.data.songs.reduce(
-                            (total, song) => total + song.duration,
-                            0,
-                        )}
+                        PriImgUrl={data.data.cover_image}
+                        SecImgUrl={
+                            data.data.artist.profile_picture ??
+                            "https://www.shyamh.com/images/blog/music.jpg"
+                        }
+                        totalSongs={data.data.total_song}
+                        totalDuration={
+                            data.data.songs?.reduce(
+                                (total, song) => total + song.duration,
+                                0,
+                            ) ?? 0
+                        }
                         artistId={data.data.artist.id}
                         type="album"
-                        contextId={data.data.id}
-                        songs={data.data.songs}
+                        contextId={data.data.id ?? 1}
+                        songs={data.data.songs ?? []}
                     />
                     <ListSong
-                        contextId={data.data.id}
+                        contextId={data.data.id ?? 1}
                         title={data.data.title}
                         type="album"
                         songs={data.data.songs}

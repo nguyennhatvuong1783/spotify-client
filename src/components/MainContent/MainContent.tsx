@@ -54,7 +54,7 @@ const MainContent: React.FC<MainContentProps> = ({ Content }) => {
                 <div className="h-full overflow-hidden rounded-md bg-(image:--gradient-color)">
                     <ScrollArea
                         key={currentPath}
-                        className="h-[calc(100vh-70px)] px-3"
+                        className="h-[calc(100vh-70px)]"
                     >
                         {Content}
                         <Footer />

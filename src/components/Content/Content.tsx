@@ -75,18 +75,20 @@ const Content: React.FC<ContentProps> = ({ keyword = null }) => {
                     <div className="grid grid-cols-5">
                         {!isAlbumsLoading &&
                             albumsData?.data &&
-                            albumsData?.data.map((item) => (
-                                <ContextItem
-                                    key={item.id}
-                                    title={item.title}
-                                    artist={item.artist.name}
-                                    artistId={item.artist.id}
-                                    imgUrl={item.image_url}
-                                    contextId={item.id ?? 1}
-                                    songs={item.songs ?? []}
-                                    type="album"
-                                />
-                            ))}
+                            albumsData?.data
+                                .slice(0, 5)
+                                .map((item) => (
+                                    <ContextItem
+                                        key={item.id}
+                                        title={item.title}
+                                        artist={item.artist.name}
+                                        artistId={item.artist.id}
+                                        imgUrl={item.cover_image}
+                                        contextId={item.id ?? 1}
+                                        songs={item.songs ?? []}
+                                        type="album"
+                                    />
+                                ))}
                     </div>
                 </div>
             ) : null}
@@ -117,16 +119,18 @@ const Content: React.FC<ContentProps> = ({ keyword = null }) => {
                     <div className="grid grid-cols-5">
                         {!isArtistsLoading &&
                             ArtistsData?.data &&
-                            ArtistsData?.data.map((item) => (
-                                <ContextItem
-                                    key={item.id}
-                                    title={item.name}
-                                    imgUrl={item.profile_picture}
-                                    contextId={item.id ?? 1}
-                                    songs={item.songs ?? []}
-                                    type="artist"
-                                />
-                            ))}
+                            ArtistsData?.data
+                                .slice(0, 5)
+                                .map((item) => (
+                                    <ContextItem
+                                        key={item.id}
+                                        title={item.name}
+                                        imgUrl={item.profile_picture}
+                                        contextId={item.id ?? 1}
+                                        songs={item.songs ?? []}
+                                        type="artist"
+                                    />
+                                ))}
                     </div>
                 </div>
             ) : null}
@@ -157,17 +161,19 @@ const Content: React.FC<ContentProps> = ({ keyword = null }) => {
                     <div className="grid grid-cols-5">
                         {!isSongsLoading &&
                             SongsData?.data &&
-                            SongsData?.data.map((item) => (
-                                <ContextItem
-                                    key={item.id}
-                                    title={item.title}
-                                    artist={item.artist?.name}
-                                    artistId={item.artist?.id}
-                                    contextId={item.id ?? 1}
-                                    songs={[item]}
-                                    type="song"
-                                />
-                            ))}
+                            SongsData?.data
+                                .slice(0, 5)
+                                .map((item) => (
+                                    <ContextItem
+                                        key={item.id}
+                                        title={item.title}
+                                        artist={item.artist?.name}
+                                        artistId={item.artist?.id}
+                                        contextId={item.id ?? 1}
+                                        songs={[item]}
+                                        type="song"
+                                    />
+                                ))}
                     </div>
                 </div>
             ) : null}

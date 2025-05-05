@@ -2,40 +2,69 @@ import Image from "next/image";
 import PlayButton from "../Buttons/PlayButton";
 import { AddIcon, ListIcon, MoreIcon } from "../icons/Icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { usePlayer } from "@/hooks/usePlayer";
+import { formatDuration } from "@/lib/utils";
+import { Song } from "@/types/song";
 
 interface ContextHeaderProps {
-    title?: string;
+    title: string;
     artist?: string;
-    artistId?: string;
-    albumImgUrl?: string;
-    artistImgUrl?: string;
+    artistId?: number;
+    PriImgUrl?: string;
+    SecImgUrl: string;
     totalSongs?: number;
-    totalDuration?: number;
-    isArtist?: boolean;
+    totalDuration: number;
+    type: "song" | "album" | "artist" | "playlist";
+    contextId: number;
+    songs: Song[];
 }
 
 const ContextHeader: React.FC<ContextHeaderProps> = ({
-    title = "Title",
-    artist = "Artist",
-    artistId = "1",
-    albumImgUrl = "https://i.scdn.co/image/ab67616d00001e028bdbdf691a5b791a5afb515b",
-    artistImgUrl = "https://i.scdn.co/image/ab6761610000f178b9c9e23c646125922719489e",
+    title,
+    artist = undefined,
+    artistId = undefined,
+    PriImgUrl = "https://www.shyamh.com/images/blog/music.jpg",
+    SecImgUrl,
     totalSongs = 0,
-    totalDuration = 0,
-    isArtist = false,
+    totalDuration,
+    type = "song",
+    contextId,
+    songs,
 }) => {
+    const router = useRouter();
+    const { user } = useAuth();
+    const { playPlaylist } = usePlayer();
+
+    const handleClickButtonPlay = () => {
+        if (!user) {
+            router.push("/login");
+            return;
+        }
+        playPlaylist(
+            {
+                id: contextId,
+                name: title,
+                playMode: type,
+                songs: songs,
+            },
+            0,
+        );
+    };
+
     return (
         <div className="flex min-w-full flex-col">
             <div className="relative flex p-6">
                 <Image
-                    src={albumImgUrl}
+                    src={PriImgUrl}
                     alt="Image"
                     fill
                     className="absolute z-0 overflow-hidden object-cover shadow-[0px_0px_40px_rgba(0,0,0,0.4)] blur-3xl brightness-95"
                 />
                 <div className="z-10 mr-6 flex flex-col justify-end">
                     <Image
-                        src={albumImgUrl}
+                        src={PriImgUrl}
                         alt="Image"
                         width={221}
                         height={221}
@@ -44,7 +73,14 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
                 </div>
                 <div className="z-10 flex flex-1 flex-col justify-end gap-2">
                     <p className="text-sm font-medium">
-                        {isArtist ? "Artist" : "Album"}
+                        {
+                            {
+                                song: "Song",
+                                album: "Album",
+                                artist: "Artist",
+                                playlist: "Playlist",
+                            }[type]
+                        }
                     </p>
                     <h1 className="cursor-default text-6xl/tight font-extrabold">
                         {title}
@@ -52,13 +88,13 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
                     {/* <AutoTextSize text="BẬT NÓ LÊN" /> */}
                     <div className="mt-3 flex items-center gap-1 truncate">
                         <Image
-                            src={artistImgUrl}
+                            src={SecImgUrl}
                             alt="Image"
                             width={24}
                             height={24}
                             className="aspect-square overflow-hidden rounded-full object-cover"
                         />
-                        {!isArtist && (
+                        {artist && artistId && (
                             <Link
                                 href={`/artist/${artistId}`}
                                 className="text-sm font-bold hover:underline"
@@ -69,7 +105,7 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
                         <ul className="ml-4 flex list-disc gap-5 text-sm font-medium opacity-80">
                             <li className="-indent-[6px]">2025</li>
                             <li className="-indent-[6px]">
-                                {`${totalSongs} songs, ${Math.floor(totalDuration / 60)} min ${totalDuration % 60} sec`}
+                                {formatDuration(totalSongs, totalDuration)}
                             </li>
                         </ul>
                     </div>
@@ -77,13 +113,17 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
             </div>
             <div className="flex items-center justify-between p-6">
                 <div className="flex items-center gap-6">
-                    <PlayButton
-                        className="p-4"
-                        // onClick={handleClickButtonPlay}
-                    />
-                    <div>
-                        <AddIcon className="h-8 w-8 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:text-(--text-color) active:scale-100 active:text-(--secondary-text-color)" />
-                    </div>
+                    {songs.length ? (
+                        <PlayButton
+                            className="p-4"
+                            onClick={handleClickButtonPlay}
+                        />
+                    ) : null}
+                    {type === "album" && (
+                        <div>
+                            <AddIcon className="h-8 w-8 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:text-(--text-color) active:scale-100 active:text-(--secondary-text-color)" />
+                        </div>
+                    )}
                     <div>
                         <MoreIcon className="h-8 w-8 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:text-(--text-color) active:scale-100 active:text-(--secondary-text-color)" />
                     </div>

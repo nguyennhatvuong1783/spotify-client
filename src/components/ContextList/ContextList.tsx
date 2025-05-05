@@ -62,7 +62,7 @@ const ContextList: React.FC<ContextListProps> = ({ contextKey }) => {
                                   title={(album as Album).title}
                                   artist={(album as Album).artist.name}
                                   artistId={(album as Album).artist.id}
-                                  imgUrl={(album as Album).image_url}
+                                  imgUrl={(album as Album).cover_image}
                                   contextId={album.id ?? 1}
                                   songs={(album as Album).songs ?? []}
                                   type="album"

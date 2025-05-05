@@ -4,7 +4,7 @@ import { Check, Plus, Search } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import Image from "next/image";
 import useSWR from "swr";
-import { ApiResponse, Pagination } from "@/types/api";
+import { ApiResponse } from "@/types/api";
 import { fetcher } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { Playlist } from "@/types/playlist";
@@ -23,9 +23,10 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
     const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState("");
 
-    const { data, error, isLoading } = useSWR<
-        ApiResponse<Pagination<Playlist>>
-    >(user ? `playlists` : null, fetcher);
+    const { data, error, isLoading } = useSWR<ApiResponse<Playlist[]>>(
+        user ? `music/playlists/` : null,
+        fetcher,
+    );
 
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
@@ -47,7 +48,7 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const responseData = await addSongToPlaylist(
                 requestData,
-                playlistId,
+                playlistId as number,
             );
         });
         onClose();
@@ -64,16 +65,17 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
     };
 
     const filteredPlaylists = playlists.filter((playlist) =>
-        playlist.title.toLowerCase().includes(searchQuery.toLowerCase()),
+        playlist.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
     useEffect(() => {
-        if (data?.data?.data) {
+        if (data?.data) {
             // Map API playlists and add isSelected property
-            const apiPlaylists = data.data.data.map((playlist) => ({
+            const apiPlaylists: Playlist[] = data.data.map((playlist) => ({
                 id: playlist.id,
-                title: playlist.title,
+                name: playlist.name,
                 isSelected: false,
+                user: playlist.user,
             }));
 
             // Combine playlist
@@ -111,7 +113,9 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
                             filteredPlaylists.map((playlist) => (
                                 <div
                                     key={playlist.id}
-                                    onClick={() => toggleSelection(playlist.id)}
+                                    onClick={() =>
+                                        toggleSelection(playlist.id as number)
+                                    }
                                     className="flex cursor-pointer items-center justify-between rounded-md px-1 py-2 transition-colors hover:bg-[#2a2a2a]"
                                 >
                                     <div className="flex items-center gap-3 pl-1">
@@ -125,7 +129,7 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
                                             height={32}
                                             className="flex h-8 w-8 rounded object-cover"
                                         />
-                                        <span>{playlist.title}</span>
+                                        <span>{playlist.name}</span>
                                     </div>
 
                                     {playlist.isSelected && (

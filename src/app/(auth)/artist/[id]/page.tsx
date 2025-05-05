@@ -12,7 +12,7 @@ export default function ArtistPage() {
     const { id } = params;
 
     const { data, error, isLoading } = useSWR<ApiResponse<Artist>>(
-        `artists/${id}`,
+        `music/artists/${id}/`,
         fetcher,
     );
     if (error) return <div>Error when loading artist</div>;
@@ -24,19 +24,24 @@ export default function ArtistPage() {
                     <ContextHeader
                         key={data.data.id}
                         title={data.data.name}
-                        PriImgUrl={data.data.image_url}
-                        SecImgUrl={data.data.image_url}
+                        PriImgUrl={data.data.profile_picture}
+                        SecImgUrl={
+                            data.data.profile_picture ??
+                            "https://www.shyamh.com/images/blog/music.jpg"
+                        }
                         totalSongs={data.data.songs_count}
-                        totalDuration={data.data.songs.reduce(
-                            (total, song) => total + song.duration,
-                            0,
-                        )}
+                        totalDuration={
+                            data.data.songs?.reduce(
+                                (total, song) => total + song.duration,
+                                0,
+                            ) ?? 0
+                        }
                         type="artist"
-                        contextId={data.data.id}
-                        songs={data.data.songs}
+                        contextId={data.data.id ?? 1}
+                        songs={data.data.songs ?? []}
                     />
                     <ListSong
-                        contextId={data.data.id}
+                        contextId={data.data.id ?? 1}
                         title={data.data.name}
                         type="artist"
                         songs={data.data.songs}

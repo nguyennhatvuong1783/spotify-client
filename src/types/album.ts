@@ -4,15 +4,10 @@ import { Song } from "./song";
 
 export interface Album {
     id?: number;
-    artist_id?: number;
     title: string;
     release_date?: string | null;
-    image_url?: string;
-    genre_id?: number;
-    description?: string | null;
-    created_at?: string | Date;
-    updated_at?: string | Date;
-    songs_count?: number;
+    cover_image?: string;
+    total_song?: number;
     artist: Artist;
     songs?: Song[];
     genre?: Genre;

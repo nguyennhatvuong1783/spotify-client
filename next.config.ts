@@ -24,6 +24,13 @@ const nextConfig: NextConfig = {
                 pathname: "/**",
                 search: "",
             },
+            {
+                protocol: "https",
+                hostname: "cdn.dribbble.com",
+                port: "",
+                pathname: "/**",
+                search: "",
+            },
         ],
     },
     typescript: {
