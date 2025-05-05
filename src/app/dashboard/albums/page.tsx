@@ -14,49 +14,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { exportToExcel } from "@/lib/excel-utils";
+import { fetcher } from "@/lib/api";
 import { Album, CreateAlbumDto } from "@/types/album";
+import { ApiResponse } from "@/types/api";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-// Demo data
-const initialUsers: Album[] = [
-    {
-        id: 1,
-        title: "Album 1",
-        image_url: "https://via.placeholder.com/150",
-        description: "Description of Album 1",
-        songs_count: 10,
-        artist: {
-            id: 1,
-            name: "John Doe",
-            biography: "Lorem ipsum dolor sit amet.",
-            is_verified: true,
-            songs_count: 10,
-            albums_count: 5,
-        },
-        songs: [],
-    },
-    {
-        id: 2,
-        title: "Album 2",
-        image_url: "https://via.placeholder.com/150",
-        description: "Description of Album 2",
-        songs_count: 8,
-        artist: {
-            id: 2,
-            name: "Jane Smith",
-            biography: "Lorem ipsum dolor sit amet.",
-            is_verified: false,
-            songs_count: 8,
-            albums_count: 3,
-        },
-        songs: [],
-    },
-];
+import useSWR from "swr";
 
 const AlbumsManager = () => {
-    const [albums, setAlbums] = useState<Album[]>(initialUsers);
+    const { data, error, isLoading } = useSWR<ApiResponse<Album[]>>(
+        "music/albums/",
+        fetcher,
+    );
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
     const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
@@ -65,7 +34,7 @@ const AlbumsManager = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filter albums based on search term
-    const filteredAlbums = albums.filter(
+    const filteredAlbums = data?.data?.filter(
         (album) =>
             album.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             album.description
@@ -111,7 +80,6 @@ const AlbumsManager = () => {
     // Delete album
     const handleDeleteAlbum = () => {
         if (selectedAlbum) {
-            setAlbums(albums.filter((album) => album.id !== selectedAlbum.id));
             setIsDeleteDialogOpen(false);
         }
     };
@@ -123,14 +91,15 @@ const AlbumsManager = () => {
 
     // Handle export excel
     const handleExportExcel = () => {
-        exportToExcel(albums, "albums");
+        // exportToExcel(albums, "albums");
     };
 
     // Import albums from excel data
-    const handleImportAlbums = (importedAlbums: Album[]) => {
-        setAlbums([...albums, ...importedAlbums]);
+    const handleImportAlbums = () => {
         setIsImportDialogOpen(false);
     };
+
+    if (error) return <div>Error loading albums</div>;
 
     return (
         <div className="container mx-auto py-10">
@@ -196,7 +165,9 @@ const AlbumsManager = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredAlbums.length > 0 ? (
+                        {!isLoading &&
+                        filteredAlbums &&
+                        filteredAlbums.length > 0 ? (
                             filteredAlbums.map((album) => (
                                 <TableRow key={album.id}>
                                     <TableCell>{album.id}</TableCell>

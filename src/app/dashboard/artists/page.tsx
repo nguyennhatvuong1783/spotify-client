@@ -15,65 +15,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { exportToExcel } from "@/lib/excel-utils";
+import { fetcher } from "@/lib/api";
+import { ApiResponse } from "@/types/api";
 import { Artist, CreateArtistDto } from "@/types/artist";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-// Demo data
-const initialUsers: Artist[] = [
-    {
-        id: 1,
-        name: "John Doe",
-        biography: "Lorem ipsum dolor sit amet.",
-        is_verified: true,
-        songs_count: 10,
-        albums_count: 5,
-    },
-    {
-        id: 2,
-        name: "Jane Smith",
-        biography: "Consectetur adipiscing elit.",
-        is_verified: false,
-        songs_count: 8,
-        albums_count: 3,
-    },
-    {
-        id: 3,
-        name: "Alice Johnson",
-        biography: "Sed do eiusmod tempor incididunt.",
-        is_verified: true,
-        songs_count: 15,
-        albums_count: 7,
-    },
-    {
-        id: 4,
-        name: "Bob Brown",
-        biography: "Ut labore et dolore magna aliqua.",
-        is_verified: false,
-        songs_count: 5,
-        albums_count: 2,
-    },
-    {
-        id: 5,
-        name: "Charlie Davis",
-        biography: "Ut enim ad minim veniam.",
-        is_verified: true,
-        songs_count: 12,
-        albums_count: 6,
-    },
-    {
-        id: 6,
-        name: "David Wilson",
-        biography: "Quis nostrud exercitation ullamco laboris.",
-        is_verified: false,
-        songs_count: 7,
-        albums_count: 4,
-    },
-];
+import useSWR from "swr";
 
 const ArtistsManager = () => {
-    const [artists, setArtists] = useState<Artist[]>(initialUsers);
+    const { data, error, isLoading } = useSWR<ApiResponse<Artist[]>>(
+        "music/artists/",
+        fetcher,
+    );
+
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
     const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
@@ -82,10 +36,10 @@ const ArtistsManager = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filter artists based on search term
-    const filteredUsers = artists.filter(
+    const filteredArtists = data?.data?.filter(
         (artist) =>
             artist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            artist.biography?.toLowerCase().includes(searchTerm.toLowerCase()),
+            artist.bio?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     // Handle add new artist
@@ -125,9 +79,6 @@ const ArtistsManager = () => {
     // Delete artist
     const handleDeleteArtist = () => {
         if (selectedArtist) {
-            setArtists(
-                artists.filter((artist) => artist.id !== selectedArtist.id),
-            );
             setIsDeleteDialogOpen(false);
         }
     };
@@ -139,14 +90,15 @@ const ArtistsManager = () => {
 
     // Handle export excel
     const handleExportExcel = () => {
-        exportToExcel(artists, "artists");
+        // exportToExcel(data?.data, "artists");
     };
 
     // Import artists from excel data
-    const handleImportArtists = (importedArtists: Artist[]) => {
-        setArtists([...artists, ...importedArtists]);
+    const handleImportArtists = () => {
         setIsImportDialogOpen(false);
     };
+
+    if (error) return <div>Error loading artists</div>;
 
     return (
         <div className="container mx-auto py-10">
@@ -200,50 +152,52 @@ const ArtistsManager = () => {
                             <TableHead className="text-(--green-color)">
                                 Name
                             </TableHead>
-                            <TableHead className="text-(--green-color)">
-                                Biography
-                            </TableHead>
+                            <TableHead className="text-(--green-color)"></TableHead>
                             <TableHead className="text-(--green-color)">
                                 Verify
                             </TableHead>
                             <TableHead className="text-(--green-color)">
-                                Number of song
+                                Monthly listeners
                             </TableHead>
-                            <TableHead className="text-(--green-color)">
+                            {/* <TableHead className="text-(--green-color)">
                                 Number of album
-                            </TableHead>
+                            </TableHead> */}
                             <TableHead className="text-right text-(--green-color)">
                                 Active
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredUsers.length > 0 ? (
-                            filteredUsers.map((artist) => (
+                        {!isLoading &&
+                        filteredArtists &&
+                        filteredArtists.length > 0 ? (
+                            filteredArtists.map((artist) => (
                                 <TableRow key={artist.id}>
                                     <TableCell>{artist.id}</TableCell>
                                     <TableCell>{artist.name}</TableCell>
-                                    <TableCell>{artist.biography}</TableCell>
+                                    <TableCell>{artist.bio}</TableCell>
                                     <TableCell>
                                         <Badge
                                             className={
-                                                artist.is_verified
+                                                artist.verified
                                                     ? "text-(--green-color)"
                                                     : "text-red-500"
                                             }
                                             variant={
-                                                artist.is_verified
+                                                artist.verified
                                                     ? "default"
                                                     : "outline"
                                             }
                                         >
-                                            {artist.is_verified
+                                            {artist.verified
                                                 ? "Verified"
                                                 : "Not verified"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{artist.songs_count}</TableCell>
-                                    <TableCell>{artist.albums_count}</TableCell>
+                                    <TableCell>
+                                        {artist.monthly_listeners}
+                                    </TableCell>
+                                    {/* <TableCell>{artist.albums_count}</TableCell> */}
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button

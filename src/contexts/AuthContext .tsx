@@ -1,18 +1,17 @@
 "use client";
 import { fetcher } from "@/lib/api";
-import { logout, refreshToken } from "@/lib/callApi";
-import { deleteCookie, getCookie, getCookieExpires } from "@/lib/cookie";
+import { deleteCookie, getCookie } from "@/lib/cookie";
 import { ApiResponse } from "@/types/api";
-import { AuthUser, User } from "@/types/user";
+import { User } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 import useSWR from "swr";
 
 interface AuthContextType {
-    isLoading: boolean;
     user: User | null;
     handleLogout: () => Promise<void>;
     handleLogin: (user: User) => void;
+    isLoading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -22,13 +21,13 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const route = useRouter();
-    const [user, setUser] = useState<User | null>(null);
-
     const { data, error, isLoading } = useSWR<ApiResponse<User>>(
-        `auth/me`,
+        "me/",
         fetcher,
     );
+
+    const route = useRouter();
+    const [user, setUser] = useState<User | null>(null);
 
     const handleLogin = (user: User) => {
         setUser(user);
@@ -36,11 +35,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const handleLogout = async () => {
-        const logoutResponseData: ApiResponse<undefined> = await logout();
-        if (logoutResponseData.errors) {
-            console.error("Logout failed:", logoutResponseData.errors);
-            return;
-        }
+        // const logoutResponseData: ApiResponse<undefined> = await logout();
+        // if (logoutResponseData.errors) {
+        //     console.error("Logout failed:", logoutResponseData.errors);
+        //     return;
+        // }
         // Xóa cookie token
         deleteCookie("token");
         setUser(null);
@@ -50,58 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const checkAuth = async () => {
         const token = getCookie("token");
 
-        if (token) {
-            // Lấy thời gian hết hạn token từ localStorage
-            const expires = getCookieExpires("token");
-
-            // Nếu không tìm thấy hoặc đã hết hạn
-            if (!expires || expires < 0) {
-                deleteCookie("token");
-                setUser(null);
-                return;
-            }
-
-            // Nếu còn dưới 5 phút thì tự động gọi refresh
-            if (expires < 5 * 60 * 1000) {
-                const refreshResponseData: ApiResponse<AuthUser> =
-                    await refreshToken();
-
-                if (refreshResponseData.errors) {
-                    console.error(
-                        "Refresh token failed:",
-                        refreshResponseData.errors,
-                    );
-                    deleteCookie("token");
-                    setUser(null);
-                    return;
-                }
-
-                const accessToken = refreshResponseData.data?.access_token;
-                const expiresAt = refreshResponseData.data?.expires_at;
-
-                if (accessToken && expiresAt) {
-                    const expiresTime = new Date(expiresAt).getTime();
-                    const maxAge = Math.floor(
-                        (expiresTime - Date.now()) / 1000,
-                    );
-
-                    // Lưu lại token và thời gian hết hạn mới
-                    document.cookie = `token=${accessToken}; path=/; max-age=${maxAge}`;
-                    localStorage.setItem(
-                        "myCookieExpires",
-                        expiresTime.toString(),
-                    );
-                }
-            }
-
-            // Token hợp lệ, có thể lấy thông tin user ở đây
-            if (error) {
-                console.error("Error fetching user data:", error);
-            }
-
-            setUser(data?.data as User);
-        } else {
+        if (!token) {
             setUser(null);
+        } else {
+            if (data?.data) {
+                setUser(data?.data);
+            }
         }
     };
 
@@ -109,13 +62,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         checkAuth();
     });
 
+    if (error) return <div>Error loading user data</div>;
+
     return (
         <AuthContext.Provider
             value={{
-                isLoading,
                 user,
                 handleLogout,
                 handleLogin,
+                isLoading,
             }}
         >
             {children}

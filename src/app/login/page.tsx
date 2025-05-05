@@ -1,3 +1,5 @@
+"use client";
+
 import TextIconButton from "@/components/Buttons/TextIconButton";
 import {
     Apple,
@@ -6,9 +8,105 @@ import {
     Spotify,
 } from "@/components/icons/Icons";
 import TextInput from "@/components/TextInput/TextInput";
+import { useAuth } from "@/hooks/useAuth";
+import { login } from "@/lib/callApi";
+import { AuthUser, LoginUserDto } from "@/types/user";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+// Định nghĩa schema
+const loginSchema = z.object({
+    username: z.string().min(1, "Please enter your username."),
+    password: z.string().min(1, "Please enter your password."),
+});
+
+type RawLoginInput = z.infer<typeof loginSchema>;
 
 export default function Login() {
+    const MySwal = withReactContent(Swal);
+    const { handleLogin } = useAuth();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setError,
+    } = useForm<RawLoginInput>({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onSubmit = async (data: RawLoginInput) => {
+        const loginData: LoginUserDto = {
+            username: data.username,
+            password: data.password,
+        };
+
+        const loginResponseData: AuthUser = await login(loginData);
+
+        const Toast = MySwal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = MySwal.stopTimer;
+                toast.onmouseleave = MySwal.resumeTimer;
+            },
+        });
+
+        if (loginResponseData.errors) {
+            Toast.fire({
+                icon: "error",
+                title: "Login failed",
+            });
+
+            const errors = loginResponseData.errors;
+
+            Object.entries(errors).forEach(([field, message]) => {
+                setError(field as keyof RawLoginInput, {
+                    type: "manual",
+                    message,
+                });
+            });
+
+            return;
+        }
+
+        const { access, user } = loginResponseData ?? {};
+
+        if (!access || !user) {
+            Toast.fire({
+                icon: "error",
+                title: "Login failed",
+            });
+
+            console.error("Dữ liệu đăng nhập thiếu thông tin cần thiết.");
+            console.error("Đăng nhập thất bại. Vui lòng thử lại.");
+            return;
+        }
+
+        try {
+            document.cookie = `token=${access}; path=/`;
+            handleLogin(user);
+        } catch (err) {
+            console.error("Lỗi khi xử lý lưu token:", err);
+            console.error("Đăng nhập thất bại.");
+            Toast.fire({
+                icon: "error",
+                title: "Login failed",
+            });
+        }
+
+        Toast.fire({
+            icon: "success",
+            title: "Login successful",
+        });
+    };
+
     return (
         <div className="flex items-center justify-center bg-(image:--gradient-color-login) md:p-8">
             <div className="flex min-h-screen w-full flex-col items-center justify-start bg-(--main-color) px-8 pb-8 md:h-auto md:min-h-auto md:w-[734px] md:rounded-md md:px-25">
@@ -44,12 +142,27 @@ export default function Login() {
                     </div>
                 </div>
                 <hr className="my-9 w-full border-[#292929]" />
-                <form className="w-full md:w-auto">
+                {/* Form đăng nhập */}
+                <form
+                    className="w-full md:w-auto"
+                    onSubmit={handleSubmit(onSubmit)}
+                >
                     <div className="flex flex-col justify-center">
+                        <div className="mb-2">
+                            <TextInput
+                                label="Username"
+                                placeholder="Username"
+                                register={register("username")}
+                                error={errors.username?.message}
+                            />
+                        </div>
                         <div>
                             <TextInput
-                                text="Email or username"
-                                placeholder="Email or username"
+                                label="Password"
+                                placeholder="Password"
+                                isPassword
+                                register={register("password")}
+                                error={errors.password?.message}
                             />
                         </div>
                         <div className="my-6 rounded-full p-1 transition-all duration-200 focus-within:ring-3 hover:scale-105 active:scale-100">
@@ -57,7 +170,7 @@ export default function Login() {
                                 type="submit"
                                 className="w-full cursor-pointer rounded-full bg-(--green-color) px-8 py-3 font-bold text-(--primary-color) outline-none hover:brightness-115 active:brightness-90 md:box-content md:w-65"
                             >
-                                Continue
+                                Log in
                             </button>
                         </div>
                     </div>

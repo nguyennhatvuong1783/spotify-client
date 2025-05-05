@@ -36,4 +36,11 @@ export const demoUsers: User[] = [
         lastMessage: "Tôi sẽ gửi tài liệu cho bạn sớm.",
         lastMessageTime: "Thứ 2",
     },
+    {
+        id: 6,
+        username: "Hoàng Văn E",
+        image_url: "/placeholder.svg?height=40&width=40",
+        lastMessage: "Tôi sẽ gửi tài liệu cho bạn sớm.",
+        lastMessageTime: "Thứ 2",
+    },
 ];

@@ -13,9 +13,9 @@ export function UserList({ users, onUserSelect }: UserListProps) {
     return (
         <Card className="border-0 shadow-none">
             <CardHeader className="pb-2">
-                <CardTitle className="text-xl">Danh sách người dùng</CardTitle>
+                <CardTitle className="text-xl">Chat</CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
+            <CardContent className="h-[55vh] space-y-4 overflow-y-auto p-0">
                 <div className="divide-border divide-y">
                     {users.map((user) => (
                         <div

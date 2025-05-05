@@ -4,12 +4,11 @@ import { Song } from "./song";
 export interface Artist {
     id?: number;
     user_id?: number | null;
-    is_verified: boolean;
+    verified: boolean;
     name: string;
-    biography: string | null;
-    image_url?: string;
-    created_at?: string | Date;
-    updated_at?: string | Date;
+    bio: string | null;
+    profile_picture?: string;
+    monthly_listeners: number;
     songs_count: number;
     albums_count: number;
     songs?: Song[];
@@ -18,16 +17,16 @@ export interface Artist {
 
 export interface CreateArtistDto {
     name: string;
-    biography?: string | null;
-    image_url?: string | null;
-    is_verified?: boolean;
+    bio?: string | null;
+    profile_picture?: string | null;
+    verified?: boolean;
 }
 
 export interface UpdateArtistDto {
     name?: string;
-    biography?: string | null;
-    image_url?: string | null;
-    is_verified?: boolean;
+    bio?: string | null;
+    profile_picture?: string | null;
+    verified?: boolean;
 }
 
 export interface ArtistDisplay

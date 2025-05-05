@@ -15,57 +15,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { exportToExcel } from "@/lib/excel-utils";
+import { fetcher } from "@/lib/api";
 import { User } from "@/types/user";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-// Demo data
-const initialUsers: User[] = [
-    {
-        id: 1,
-        username: "johndoe",
-        email: "john.doe@example.com",
-        phone: "0123456789",
-        account_type: "admin",
-        is_active: true,
-    },
-    {
-        id: 2,
-        username: "janedoe",
-        email: "jane.doe@example.com",
-        phone: "0987654321",
-        account_type: "free",
-        is_active: true,
-    },
-    {
-        id: 3,
-        username: "bobsmith",
-        email: "bob.smith@example.com",
-        phone: "0123498765",
-        account_type: "free",
-        is_active: false,
-    },
-    {
-        id: 4,
-        username: "alicejones",
-        email: "alice.jones@example.com",
-        phone: "0567891234",
-        account_type: "premium",
-        is_active: true,
-    },
-    {
-        id: 5,
-        username: "mikebrown",
-        email: "mike.brown@example.com",
-        phone: "0345678912",
-        account_type: "free",
-        is_active: false,
-    },
-];
+import useSWR from "swr";
 
 const UsersManager = () => {
-    const [users, setUsers] = useState<User[]>(initialUsers);
+    const { data, error, isLoading } = useSWR<User[]>("users/", fetcher);
+
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
@@ -74,11 +32,11 @@ const UsersManager = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filter users based on search term
-    const filteredUsers = users.filter(
+    const filteredUsers = data?.filter(
         (user) =>
             user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.phone.includes(searchTerm),
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.gender?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     // Handle add new user
@@ -104,17 +62,18 @@ const UsersManager = () => {
     // Save user (add or edit)
     const handleSaveUser = (user: User) => {
         if (isEditing) {
-            setUsers(users.map((u) => (u.id === user.id ? user : u)));
+            // setUsers(users.map((u) => (u.id === user.id ? user : u)));
         } else {
-            setUsers([...users, { ...user, id: (users.length + 1) as number }]);
+            // setUsers([...users, { ...user, id: (users.length + 1) as number }]);
         }
+        console.log(user);
         setIsAddEditDialogOpen(false);
     };
 
     // Delete user
     const handleDeleteUser = () => {
         if (selectedUser) {
-            setUsers(users.filter((user) => user.id !== selectedUser.id));
+            // setUsers(users.filter((user) => user.id !== selectedUser.id));
             setIsDeleteDialogOpen(false);
         }
     };
@@ -126,14 +85,15 @@ const UsersManager = () => {
 
     // Handle export excel
     const handleExportExcel = () => {
-        exportToExcel(users, "users");
+        // exportToExcel(data?.data, "users");
     };
 
     // Import users from excel data
-    const handleImportUsers = (importedUsers: User[]) => {
-        setUsers([...users, ...importedUsers]);
+    const handleImportUsers = () => {
         setIsImportDialogOpen(false);
     };
+
+    if (error) return <div>Error loading users</div>;
 
     return (
         <div className="container mx-auto py-10">
@@ -188,13 +148,10 @@ const UsersManager = () => {
                                 Email
                             </TableHead>
                             <TableHead className="text-(--green-color)">
-                                Phone number
-                            </TableHead>
-                            <TableHead className="text-(--green-color)">
                                 Account type
                             </TableHead>
                             <TableHead className="text-(--green-color)">
-                                Status
+                                Gender
                             </TableHead>
                             <TableHead className="text-right text-(--green-color)">
                                 Active
@@ -202,49 +159,32 @@ const UsersManager = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredUsers.length > 0 ? (
+                        {!isLoading &&
+                        filteredUsers &&
+                        filteredUsers.length > 0 ? (
                             filteredUsers.map((user) => (
                                 <TableRow key={user.id}>
                                     <TableCell>{user.id}</TableCell>
                                     <TableCell>{user.username}</TableCell>
                                     <TableCell>{user.email}</TableCell>
-                                    <TableCell>{user.phone}</TableCell>
                                     <TableCell>
                                         <Badge
                                             variant={
-                                                user.account_type === "admin"
+                                                user.is_superuser
                                                     ? "destructive"
-                                                    : user.account_type ===
-                                                        "free"
-                                                      ? "default"
-                                                      : "secondary"
+                                                    : user.is_premium
+                                                      ? "secondary"
+                                                      : "default"
                                             }
                                         >
-                                            {user.account_type === "admin"
+                                            {user.is_superuser
                                                 ? "Admin"
-                                                : user.account_type === "free"
-                                                  ? "Free"
-                                                  : "Premium"}
+                                                : user.is_premium
+                                                  ? "Premium"
+                                                  : "Free"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            className={
-                                                user.is_active
-                                                    ? "text-(--green-color)"
-                                                    : "text-red-500"
-                                            }
-                                            variant={
-                                                user.is_active
-                                                    ? "default"
-                                                    : "outline"
-                                            }
-                                        >
-                                            {user.is_active
-                                                ? "Active"
-                                                : "Inactive"}
-                                        </Badge>
-                                    </TableCell>
+                                    <TableCell>{user.gender}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button

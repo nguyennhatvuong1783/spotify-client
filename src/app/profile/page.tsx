@@ -1,5 +1,4 @@
 "use client";
-import { SuccessDialog } from "@/components/Dialog/SuccessDialog";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import TextInput from "@/components/TextInput/TextInput";
@@ -8,22 +7,18 @@ import { changePassword, editProfile } from "@/lib/callApi";
 import { ApiResponse } from "@/types/api";
 import { PasswordChangeDto, UpdateProfileDto, User } from "@/types/user";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import { z } from "zod";
-
-const phoneRegex = new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g);
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const profileSchema = z.object({
     email: z
         .string()
         .min(1, "Please enter your email.")
         .email("Invalid email address (name@domain.com)."),
-    phone: z
-        .string()
-        .min(1, "Please enter your phone number.")
-        .regex(phoneRegex, "Invalid Number."),
 });
 
 const passwordSchema = z
@@ -94,9 +89,8 @@ type RawProfileInput = z.infer<typeof profileSchema>;
 type RawPasswordInput = z.infer<typeof passwordSchema>;
 
 const Profile = () => {
+    const MySwal = withReactContent(Swal);
     const { user } = useAuth();
-    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-    const [message, setMessage] = useState("");
 
     const {
         register: registerProfile,
@@ -107,7 +101,6 @@ const Profile = () => {
         resolver: zodResolver(profileSchema),
         values: {
             email: user?.email ?? "",
-            phone: user?.phone ?? "",
         },
     });
 
@@ -125,13 +118,30 @@ const Profile = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const profileData: UpdateProfileDto = {
             email: data.email,
-            phone: data.phone,
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const editProfileResponseData: ApiResponse<User> =
             await editProfile(profileData);
+
+        const Toast = MySwal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = MySwal.stopTimer;
+                toast.onmouseleave = MySwal.resumeTimer;
+            },
+        });
+
         if (editProfileResponseData.errors) {
+            Toast.fire({
+                icon: "error",
+                title: "Registration failed",
+            });
+
             // Xử lý lỗi từ API và gán vào form
             Object.entries(editProfileResponseData.errors).forEach(
                 ([field, message]) => {
@@ -143,8 +153,12 @@ const Profile = () => {
             );
             return;
         }
-        setMessage("Profile saved successfully!");
-        setIsSuccessOpen(true);
+
+        Toast.fire({
+            icon: "success",
+            title: "Profile updated successfully",
+        });
+
         mutate("auth/me");
     };
 
@@ -157,7 +171,25 @@ const Profile = () => {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dataChangePassword: any = await changePassword(passwordData);
+
+        const Toast = MySwal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = MySwal.stopTimer;
+                toast.onmouseleave = MySwal.resumeTimer;
+            },
+        });
+
         if (dataChangePassword.success === false) {
+            Toast.fire({
+                icon: "error",
+                title: "Password change failed",
+            });
+
             // Xử lý lỗi từ API và gán vào form
             setErrorPassword("current_password", {
                 type: "manual",
@@ -165,8 +197,12 @@ const Profile = () => {
             });
             return;
         }
-        setMessage("Password changed successfully!");
-        setIsSuccessOpen(true);
+
+        Toast.fire({
+            icon: "success",
+            title: "Password changed successfully",
+        });
+
         reset();
     };
 
@@ -189,17 +225,18 @@ const Profile = () => {
                                 <TextInput
                                     label="Your plan"
                                     isDisabled={true}
-                                    value={user?.account_type.toUpperCase()}
+                                    value={
+                                        user?.is_superuser
+                                            ? "Admin"
+                                            : user?.is_premium
+                                              ? "Premium"
+                                              : "Free"
+                                    }
                                 />
                                 <TextInput
                                     label="Email"
                                     register={registerProfile("email")}
                                     error={errorsProfile.email?.message}
-                                />
-                                <TextInput
-                                    label="Phone number"
-                                    register={registerProfile("phone")}
-                                    error={errorsProfile.phone?.message}
                                 />
                                 <div className="w-fit self-end rounded-full p-1 transition-all duration-200 focus-within:ring-3 hover:scale-105 active:scale-100">
                                     <button
@@ -256,12 +293,6 @@ const Profile = () => {
                 </div>
             </div>
             <Footer />
-            <SuccessDialog
-                isOpen={isSuccessOpen}
-                onClose={() => setIsSuccessOpen(false)}
-                message={message}
-                autoCloseDelay={2200}
-            />
         </div>
     );
 };

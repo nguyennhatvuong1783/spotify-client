@@ -54,13 +54,13 @@ export function ChatScreen({ user, onBack }: ChatScreenProps) {
     };
 
     return (
-        <Card className="flex h-[80vh] flex-col border-0 shadow-none">
-            <CardHeader className="border-border flex flex-row items-center gap-3 border-b px-4 py-3">
+        <Card className="flex h-[70vh] flex-col border-0 shadow-none">
+            <CardHeader className="border-border flex flex-row items-center gap-3 border-b px-4 pb-3">
                 <Button
                     variant="ghost"
                     size="icon"
                     onClick={onBack}
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                 >
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
@@ -97,7 +97,7 @@ export function ChatScreen({ user, onBack }: ChatScreenProps) {
                 ))}
             </CardContent>
 
-            <CardFooter className="border-border border-t p-3">
+            <CardFooter className="border-border border-t p-3 pb-0">
                 <form
                     onSubmit={handleSendMessage}
                     className="flex w-full gap-2"
@@ -105,10 +105,14 @@ export function ChatScreen({ user, onBack }: ChatScreenProps) {
                     <Input
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Nhập tin nhắn..."
+                        placeholder="Enter message..."
                         className="flex-1"
                     />
-                    <Button type="submit" size="icon">
+                    <Button
+                        type="submit"
+                        size="icon"
+                        className="cursor-pointer"
+                    >
                         <Send className="h-5 w-5" />
                     </Button>
                 </form>

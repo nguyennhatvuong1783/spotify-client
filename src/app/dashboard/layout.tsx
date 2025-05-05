@@ -1,4 +1,5 @@
 import LeftMenuForAdmin from "@/components/LeftMenu/LeftMenuForAdmin";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,9 +17,11 @@ export default function LoginLayout({
             <div className="w-65">
                 <LeftMenuForAdmin />
             </div>
-            <div className="flex-1 bg-(image:--gradient-color-login) px-6">
-                {children}
-            </div>
+            <ScrollArea className="h-[calc(100vh)] flex-1 px-3">
+                <div className="bg-(image:--gradient-color-login) px-6">
+                    {children}
+                </div>
+            </ScrollArea>
         </div>
     );
 }

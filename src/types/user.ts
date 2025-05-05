@@ -2,23 +2,18 @@ export interface User {
     id?: number;
     username: string;
     email?: string;
-    phone?: string;
-    image_url?: string | null;
-    email_verified_at?: string | Date | null;
+    profile_picture?: string | null;
     password?: string;
-    account_type?: "free" | "premium" | "admin" | "artist";
-    is_active?: boolean;
-    remember_token?: string | null;
-    created_at?: string | Date;
-    updated_at?: string | Date;
+    is_superuser?: boolean;
+    is_premium?: boolean;
+    gender?: string;
     lastMessage?: string;
     lastMessageTime?: string;
 }
 
 // For user login (public facing)
 export interface LoginUserDto {
-    email?: string;
-    username?: string;
+    username: string;
     password: string;
 }
 
@@ -26,25 +21,21 @@ export interface LoginUserDto {
 export interface RegisterUserDto {
     username: string;
     email: string;
-    phone: string;
     password: string;
-    password_confirmation: string;
+    confirm_password: string;
 }
 
 // For user profile updates (excluding sensitive fields)
 export interface UpdateProfileDto {
     email?: string;
-    phone?: string;
-    image_url?: string | null;
+    profile_picture?: string | null;
 }
 
 // For admin user management
 export interface AdminUpdateUserDto {
     username?: string;
     email?: string;
-    phone?: string;
-    account_type?: "free" | "premium" | "admin";
-    is_active?: boolean;
+    is_superuser?: boolean;
 }
 
 // Safe user representation for API responses
@@ -52,11 +43,9 @@ export interface SafeUser {
     id: number;
     username: string;
     email: string;
-    phone: string;
-    image_url: string | null;
+    profile_picture: string | null;
     email_verified_at: string | Date | null;
-    account_type: "free" | "premium" | "admin";
-    is_active: boolean;
+    is_superuser?: boolean;
     created_at: string | Date;
     updated_at: string | Date;
 }
@@ -64,9 +53,10 @@ export interface SafeUser {
 // For login responses (extends SafeUser with token)
 export interface AuthUser extends SafeUser {
     user?: User;
-    access_token: string;
-    expires_at: string | Date;
-    token_type: string;
+    access: string;
+    errors?: {
+        [key: string]: string;
+    };
 }
 
 // For password reset/change operations

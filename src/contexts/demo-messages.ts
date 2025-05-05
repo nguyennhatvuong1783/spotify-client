@@ -89,4 +89,24 @@ export const demoMessages: Record<string, Message[]> = {
             timestamp: "2023-04-30T16:23:00Z",
         },
     ],
+    "6": [
+        {
+            id: "1",
+            senderId: "5",
+            text: "Tôi sẽ gửi tài liệu cho bạn sớm.",
+            timestamp: "2023-04-30T16:20:00Z",
+        },
+        {
+            id: "2",
+            senderId: "me",
+            text: "Cảm ơn bạn, tôi đang cần tài liệu đó.",
+            timestamp: "2023-04-30T16:22:00Z",
+        },
+        {
+            id: "3",
+            senderId: "5",
+            text: "Không có gì, tôi sẽ gửi trong hôm nay.",
+            timestamp: "2023-04-30T16:23:00Z",
+        },
+    ],
 };

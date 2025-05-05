@@ -14,50 +14,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { exportToExcel } from "@/lib/excel-utils";
+import { fetcher } from "@/lib/api";
+import { ApiResponse } from "@/types/api";
 import { CreateSongDto, Song } from "@/types/song";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-// Demo data
-const initialUsers: Song[] = [
-    {
-        id: 1,
-        title: "Song 1",
-        duration: 180,
-        artists: [
-            {
-                id: 1,
-                name: "John Doe",
-                biography: "Lorem ipsum dolor sit amet.",
-                is_verified: true,
-                songs_count: 10,
-                albums_count: 5,
-            },
-        ],
-        album: null,
-    },
-    {
-        id: 2,
-        title: "Song 2",
-        duration: 240,
-        artists: [
-            {
-                id: 2,
-                name: "Jane Smith",
-                biography: "Consectetur adipiscing elit.",
-                is_verified: false,
-                songs_count: 5,
-                albums_count: 2,
-            },
-        ],
-        album: null,
-    },
-    // Add more demo data as needed
-];
+import useSWR from "swr";
 
 const SongsManager = () => {
-    const [songs, setSongs] = useState<Song[]>(initialUsers);
+    const { data, error, isLoading } = useSWR<ApiResponse<Song[]>>(
+        "music/songs/",
+        fetcher,
+    );
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedSong, setSelectedSong] = useState<Song | null>(null);
     const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
@@ -66,10 +34,10 @@ const SongsManager = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filter songs based on search term
-    const filteredSongs = songs.filter(
+    const filteredSongs = data?.data?.filter(
         (song) =>
             song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            song.artists[0].name
+            song.artist?.name
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase()) ||
             song.album?.title.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -109,7 +77,6 @@ const SongsManager = () => {
     // Delete song
     const handleDeleteSong = () => {
         if (selectedSong) {
-            setSongs(songs.filter((song) => song.id !== selectedSong.id));
             setIsDeleteDialogOpen(false);
         }
     };
@@ -121,14 +88,15 @@ const SongsManager = () => {
 
     // Handle export excel
     const handleExportExcel = () => {
-        exportToExcel(songs, "users");
+        // exportToExcel(songs, "users");
     };
 
     // Import users from excel data
-    const handleImportSongs = (importedUsers: Song[]) => {
-        setSongs([...songs, ...importedUsers]);
+    const handleImportSongs = () => {
         setIsImportDialogOpen(false);
     };
+
+    if (error) return <div>Error loading songs</div>;
 
     return (
         <div className="container mx-auto py-10">
@@ -194,15 +162,15 @@ const SongsManager = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredSongs.length > 0 ? (
+                        {!isLoading &&
+                        filteredSongs &&
+                        filteredSongs.length > 0 ? (
                             filteredSongs.map((song) => (
                                 <TableRow key={song.id}>
                                     <TableCell>{song.id}</TableCell>
                                     <TableCell>{song.title}</TableCell>
                                     <TableCell>{song.duration}</TableCell>
-                                    <TableCell>
-                                        {song.artists[0].name}
-                                    </TableCell>
+                                    <TableCell>{song.artist?.name}</TableCell>
                                     <TableCell>{song.album?.title}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">

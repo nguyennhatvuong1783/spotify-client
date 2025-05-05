@@ -14,62 +14,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { exportToExcel } from "@/lib/excel-utils";
+import { fetcher } from "@/lib/api";
+import { ApiResponse } from "@/types/api";
 import { Playlist } from "@/types/playlist";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-
-// Demo data
-const initialUsers: Playlist[] = [
-    {
-        id: 1,
-        title: "My Favorite Songs",
-        description: "A collection of my favorite songs.",
-        image_url: "https://example.com/image1.jpg",
-        songs_count: 10,
-        user: {
-            id: 1,
-            username: "john_doe",
-            email: "",
-            phone: "123-456-7890",
-            account_type: "admin",
-            is_active: true,
-        },
-    },
-    {
-        id: 2,
-        title: "Chill Vibes",
-        description: "Relaxing music for a chill day.",
-        image_url: "https://example.com/image2.jpg",
-        songs_count: 15,
-        user: {
-            id: 2,
-            username: "jane_doe",
-            email: "",
-            phone: "987-654-3210",
-            account_type: "premium",
-            is_active: true,
-        },
-    },
-    {
-        id: 3,
-        title: "Workout Mix",
-        description: "High-energy songs for workouts.",
-        image_url: "https://example.com/image3.jpg",
-        songs_count: 20,
-        user: {
-            id: 3,
-            username: "alice_smith",
-            email: "",
-            phone: "555-123-4567",
-            account_type: "free",
-            is_active: false,
-        },
-    },
-];
+import useSWR from "swr";
 
 const PlaylistsManager = () => {
-    const [playlists, setPlaylists] = useState<Playlist[]>(initialUsers);
+    const { data, error, isLoading } = useSWR<ApiResponse<Playlist[]>>(
+        "music/playlists/",
+        fetcher,
+    );
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(
         null,
@@ -80,7 +36,7 @@ const PlaylistsManager = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Filter playlists based on search term
-    const filteredPlaylists = playlists.filter(
+    const filteredPlaylists = data?.data?.filter(
         (playlist) =>
             playlist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             playlist.description
@@ -130,11 +86,6 @@ const PlaylistsManager = () => {
     // Delete playlist
     const handleDeletePlaylist = () => {
         if (selectedPlaylist) {
-            setPlaylists(
-                playlists.filter(
-                    (playlist) => playlist.id !== selectedPlaylist.id,
-                ),
-            );
             setIsDeleteDialogOpen(false);
         }
     };
@@ -146,14 +97,15 @@ const PlaylistsManager = () => {
 
     // Handle export excel
     const handleExportExcel = () => {
-        exportToExcel(playlists, "playlists");
+        // exportToExcel(playlists, "playlists");
     };
 
     // Import playlist from excel data
-    const handleImportPlaylists = (importedPlaylists: Playlist[]) => {
-        setPlaylists([...playlists, ...importedPlaylists]);
+    const handleImportPlaylists = () => {
         setIsImportDialogOpen(false);
     };
+
+    if (error) return <div>Error loading playlists</div>;
 
     return (
         <div className="container mx-auto py-10">
@@ -222,7 +174,9 @@ const PlaylistsManager = () => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredPlaylists.length > 0 ? (
+                        {!isLoading &&
+                        filteredPlaylists &&
+                        filteredPlaylists.length > 0 ? (
                             filteredPlaylists.map((playlist) => (
                                 <TableRow key={playlist.id}>
                                     <TableCell>{playlist.id}</TableCell>

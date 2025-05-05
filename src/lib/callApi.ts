@@ -11,16 +11,14 @@ import { fetchData } from "./api";
 import { ApiResponse } from "@/types/api";
 import { CreatePlaylistDto, Playlist } from "@/types/playlist";
 
-export const login = async (
-    data: LoginUserDto,
-): Promise<ApiResponse<AuthUser>> => {
-    return await fetchData("auth/login", data, "POST");
+export const login = async (data: LoginUserDto): Promise<AuthUser> => {
+    return await fetchData("login/", data, "POST");
 };
 
 export const signup = async (
     data: RegisterUserDto,
 ): Promise<ApiResponse<AuthUser>> => {
-    return await fetchData("auth/register", data, "POST");
+    return await fetchData("register/", data, "POST");
 };
 
 export const logout = async (): Promise<ApiResponse<undefined>> => {

@@ -4,15 +4,12 @@ import { Artist } from "./artist";
 export interface Song {
     id?: number;
     title: string;
-    artist_ids?: number[];
-    album_id?: number | null;
-    duration: number;
-    file_url?: string;
-    release_date?: string | null;
-    created_at?: string | Date;
-    updated_at?: string | Date;
-    artists: Artist[];
+    artist?: Artist;
     album?: Album | null;
+    duration: number;
+    audio_file?: string;
+    release_date?: string | null;
+    total_plays?: number;
 }
 
 export interface CreateSongDto {
@@ -20,7 +17,7 @@ export interface CreateSongDto {
     artist_ids?: number[] | undefined;
     album_id?: number | null;
     duration: number;
-    file_url?: string | undefined;
+    audio_file?: string | undefined;
     release_date?: string | null;
 }
 
@@ -28,7 +25,7 @@ export interface UpdateSongDto {
     title?: string;
     album_id?: number | null;
     duration?: number;
-    file_url?: string;
+    audio_file?: string;
     release_date?: string | null;
 }
 
