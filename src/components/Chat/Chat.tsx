@@ -1,5 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChatIcon, OpenChat } from "../icons/Icons";
+import { ThemeProvider } from "../ui/theme-provider";
+import { User } from "@/types/user";
+import { ThemeToggle } from "./theme-toggle";
+import { ChatScreen } from "./chat-screen";
+import { UserList } from "./user-list";
+import { demoUsers } from "@/contexts/demo-users";
 
 interface ChatProps {
     chatSize: number;
@@ -7,6 +13,16 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ onClick, chatSize }) => {
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+    const handleUserSelect = (user: User) => {
+        setSelectedUser(user);
+    };
+
+    const handleBackToList = () => {
+        setSelectedUser(null);
+    };
+
     return (
         <div className="ml-2 h-full rounded-md bg-(--main-color) p-4">
             {chatSize == 5 ? (
@@ -32,6 +48,31 @@ const Chat: React.FC<ChatProps> = ({ onClick, chatSize }) => {
                     />
                 </div>
             )}
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+            >
+                <main className="bg-background flex min-h-screen flex-col items-center justify-between p-4 md:p-8">
+                    <div className="bg-card mx-auto w-full max-w-md overflow-hidden rounded-xl shadow-md">
+                        <div className="absolute top-4 right-4">
+                            <ThemeToggle />
+                        </div>
+                        {selectedUser ? (
+                            <ChatScreen
+                                user={selectedUser}
+                                onBack={handleBackToList}
+                            />
+                        ) : (
+                            <UserList
+                                users={demoUsers}
+                                onUserSelect={handleUserSelect}
+                            />
+                        )}
+                    </div>
+                </main>
+            </ThemeProvider>
         </div>
     );
 };

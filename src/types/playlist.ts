@@ -2,7 +2,7 @@ import { Song } from "./song";
 import { User } from "./user";
 
 export interface Playlist {
-    id: number;
+    id?: number;
     user_id?: number;
     title: string;
     description?: string | null;
@@ -12,6 +12,7 @@ export interface Playlist {
     songs?: Song[];
     songs_count?: number;
     isSelected?: boolean;
+    user: User | null;
 }
 
 export interface CreatePlaylistDto {
@@ -28,7 +29,6 @@ export interface UpdatePlaylistDto {
 
 export interface PlaylistDisplay
     extends Omit<Playlist, "created_at" | "updated_at"> {
-    user?: User;
     song_count?: number;
     duration_total?: number;
     formatted_duration?: string;

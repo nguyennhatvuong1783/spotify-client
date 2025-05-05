@@ -2,23 +2,25 @@ import { Album } from "./album";
 import { Artist } from "./artist";
 
 export interface Song {
-    id: number;
+    id?: number;
     title: string;
-    album_id: number | null;
+    artist_ids?: number[];
+    album_id?: number | null;
     duration: number;
-    file_url: string;
-    release_date: string | null;
-    created_at: string | Date;
-    updated_at: string | Date;
+    file_url?: string;
+    release_date?: string | null;
+    created_at?: string | Date;
+    updated_at?: string | Date;
     artists: Artist[];
     album?: Album | null;
 }
 
 export interface CreateSongDto {
     title: string;
+    artist_ids?: number[] | undefined;
     album_id?: number | null;
     duration: number;
-    file_url: string;
+    file_url?: string | undefined;
     release_date?: string | null;
 }
 

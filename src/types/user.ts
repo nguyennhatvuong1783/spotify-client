@@ -1,16 +1,18 @@
 export interface User {
-    id: number;
+    id?: number;
     username: string;
-    email: string;
-    phone: string;
-    image_url: string | null;
-    email_verified_at: string | Date | null;
-    password: string;
-    account_type: "free" | "premium" | "admin" | "artist";
-    is_active: boolean;
-    remember_token: string | null;
-    created_at: string | Date;
-    updated_at: string | Date;
+    email?: string;
+    phone?: string;
+    image_url?: string | null;
+    email_verified_at?: string | Date | null;
+    password?: string;
+    account_type?: "free" | "premium" | "admin" | "artist";
+    is_active?: boolean;
+    remember_token?: string | null;
+    created_at?: string | Date;
+    updated_at?: string | Date;
+    lastMessage?: string;
+    lastMessageTime?: string;
 }
 
 // For user login (public facing)
@@ -72,4 +74,11 @@ export interface PasswordChangeDto {
     current_password: string;
     new_password: string;
     new_password_confirmation: string;
+}
+
+export interface Message {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: string;
 }

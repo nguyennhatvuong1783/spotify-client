@@ -544,3 +544,75 @@ export function OpenChat(props: SVGProps<SVGSVGElement>) {
         </svg>
     );
 }
+
+export function MaxVolume(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            data-encore-id="icon"
+            role="presentation"
+            aria-hidden="false"
+            id="volume-icon"
+            viewBox="0 0 16 16"
+            {...props}
+        >
+            <path
+                fill="currentColor"
+                d="M9.741.85a.75.75 0 0 1 .375.65v13a.75.75 0 0 1-1.125.65l-6.925-4a3.642 3.642 0 0 1-1.33-4.967 3.639 3.639 0 0 1 1.33-1.332l6.925-4a.75.75 0 0 1 .75 0zm-6.924 5.3a2.139 2.139 0 0 0 0 3.7l5.8 3.35V2.8l-5.8 3.35zm8.683 4.29V5.56a2.75 2.75 0 0 1 0 4.88z"
+            ></path>
+            <path
+                fill="currentColor"
+                d="M11.5 13.614a5.752 5.752 0 0 0 0-11.228v1.55a4.252 4.252 0 0 1 0 8.127v1.55z"
+            ></path>
+        </svg>
+    );
+}
+
+export function Warning(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            data-encore-id="icon"
+            role="img"
+            aria-label="Error:"
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            {...props}
+        >
+            <path
+                fill="currentColor"
+                d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"
+            ></path>
+            <path
+                fill="currentColor"
+                d="M7.25 9V4h1.5v5h-1.5zm0 3.026v-1.5h1.5v1.5h-1.5z"
+            ></path>
+        </svg>
+    );
+}
+
+export function Profile(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg viewBox="0 0 1024 1024" aria-label="Profile" {...props}>
+            <path
+                fill="currentColor"
+                d="M730.06 679.64q-45.377 53.444-101.84 83.443t-120 29.999q-64.032 0-120.75-30.503t-102.6-84.451q-40.335 13.109-77.645 29.747t-53.948 26.722l-17.142 10.084Q106.388 763.84 84.96 802.41t-21.428 73.107 25.461 59.242 60.754 24.705h716.95q35.293 0 60.754-24.705t25.461-59.242-21.428-72.603-51.679-57.225q-6.554-4.033-18.907-10.84t-51.427-24.453-79.409-30.755zm-221.84 25.72q-34.285 0-67.561-14.873t-60.754-40.335-51.175-60.502-40.083-75.124-25.461-84.451-9.075-87.728q0-64.032 19.915-116.22t54.452-85.964 80.67-51.931 99.072-18.151 99.072 18.151 80.67 51.931 54.452 85.964 19.915 116.22q0 65.04-20.167 130.58t-53.948 116.72-81.426 83.443-98.568 32.268z"
+            ></path>
+        </svg>
+    );
+}
+
+export function Plus(props: SVGProps<SVGSVGElement>) {
+    return (
+        <svg
+            data-encore-id="icon"
+            role="img"
+            aria-hidden="true"
+            viewBox="0 0 16 16"
+            {...props}
+        >
+            <path
+                fill="currentColor"
+                d="M15.25 8a.75.75 0 0 1-.75.75H8.75v5.75a.75.75 0 0 1-1.5 0V8.75H1.5a.75.75 0 0 1 0-1.5h5.75V1.5a.75.75 0 0 1 1.5 0v5.75h5.75a.75.75 0 0 1 .75.75z"
+            ></path>
+        </svg>
+    );
+}
