@@ -1,28 +1,66 @@
-## Use Node.js v22.14.0
+# 🎧 Spotify Client - Frontend
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Đây là phần frontend của dự án **Web Nghe Nhạc Trực Tuyến**, được xây dựng bằng **Next.js**, **TypeScript** và **Tailwind CSS**.
 
-## Getting Started
+## 🧰 Công nghệ sử dụng
 
-First, run the development server:
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Hook Form](https://react-hook-form.com/)
+- [SWR](https://swr.vercel.app/)
+
+## 🚀 Khởi chạy dự án
+
+### Use Node.js v22.14.0
 
 ```bash
-npm i
+# Cài đặt các dependencies
+npm install
 
+# Chạy development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Dự án sẽ chạy tại: http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Hình ảnh demo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Trang chủ:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture1.png" alt="HomePage" width="100%">
+
+- Đăng nhập:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture2.png" alt="LoginPage" width="100%">
+
+- Đảng ký:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture3.png" alt="SignupPage" width="100%">
+
+- Chi tiết album:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture4.png" alt="AlbumPage" width="100%">
+
+- Artist:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture5.png" alt="ArtistPage" width="100%">
+
+- Playlist:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture6.png" alt="PlaylistPage" width="100%">
+
+- Profile:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture7.png" alt="ProfilePage" width="100%">
+
+- Change password:
+
+<img src="https://raw.githubusercontent.com/nguyennhatvuong1783/MusicApp-Client/refs/heads/main/public/images/Picture8.png" alt="ChangePasswordPage" width="100%">
+
+# Back-end
+
+[Spotify Server](https://github.com/tranqui268/Spotify_Project).
 
 ## Learn More
 
