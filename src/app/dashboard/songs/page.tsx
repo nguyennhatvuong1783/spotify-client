@@ -15,13 +15,20 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { fetcher } from "@/lib/api";
+import { getCookie } from "@/lib/cookie";
+import { Album } from "@/types/album";
 import { ApiResponse } from "@/types/api";
+import { Artist } from "@/types/artist";
 import { CreateSongDto, Song } from "@/types/song";
 import { FileDown, FileUp, Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import useSWR, { mutate } from "swr";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const SongsManager = () => {
+    const MySwal = withReactContent(Swal);
+
     const { data, error, isLoading } = useSWR<ApiResponse<Song[]>>(
         "music/songs/",
         fetcher,
@@ -33,14 +40,12 @@ const SongsManager = () => {
     const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
+    const [artistNames, setArtistNames] = useState<(string | undefined)[]>([]);
+    const [albumNames, setAlbumNames] = useState<(string | undefined)[]>([]);
+
     // Filter songs based on search term
-    const filteredSongs = data?.data?.filter(
-        (song) =>
-            song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            song.artist?.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            song.album?.title.toLowerCase().includes(searchTerm.toLowerCase()),
+    const filteredSongs = data?.data?.filter((song) =>
+        song.title.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
     // Handle add new user
@@ -64,14 +69,58 @@ const SongsManager = () => {
     };
 
     // Save song (add or edit)
-    const handleSaveSong = (song: CreateSongDto) => {
+    const handleSaveSong = async (song: CreateSongDto) => {
+        const Toast = MySwal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = MySwal.stopTimer;
+                toast.onmouseleave = MySwal.resumeTimer;
+            },
+        });
+
         if (isEditing) {
             // setSongs(songs.map((u) => (u.id === song.id ? song : u)));
         } else {
-            // setSongs([...songs, { ...song, id: (songs.length + 1) as number }]);
+            try {
+                const formData = new FormData();
+                formData.append("title", song.title);
+                formData.append("duration", song.duration);
+                formData.append("artist", song.artist);
+                formData.append("audio_file", song.audio_file as File);
+
+                const token = getCookie("token");
+                const response = await fetch(
+                    "http://localhost:8000/api/music/songs/",
+                    {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    },
+                );
+
+                const result = await response.json();
+                console.log("Upload result:", result);
+                Toast.fire({
+                    icon: "success",
+                    title: "Add music successfully",
+                });
+                setIsAddEditDialogOpen(false);
+                mutate("music/songs/");
+            } catch (error) {
+                console.error("Upload failed:", error);
+                Toast.fire({
+                    icon: "error",
+                    title: "Add music failed",
+                });
+            }
         }
         console.log("song", song);
-        setIsAddEditDialogOpen(false);
     };
 
     // Delete song
@@ -95,6 +144,65 @@ const SongsManager = () => {
     const handleImportSongs = () => {
         setIsImportDialogOpen(false);
     };
+
+    const GetArtistById = async (id: number): Promise<Artist | undefined> => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/artists/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch artist data");
+            }
+            const artistData: ApiResponse<Artist> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    const GetAlbumById = async (id: number): Promise<Album | undefined> => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/albums/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch album data");
+            }
+            const artistData: ApiResponse<Album> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            if (!data?.data) return;
+
+            const promises = data.data.map((item) =>
+                GetArtistById(item.artist ?? 1).then((artist) => artist?.name),
+            );
+
+            const results = await Promise.all(promises);
+            setArtistNames(results);
+        };
+
+        const fetchAlbums = async () => {
+            if (!data?.data) return;
+
+            const promises = data.data.map((item) =>
+                GetAlbumById(item.album ?? 1).then((album) => album?.title),
+            );
+
+            const results = await Promise.all(promises);
+            setAlbumNames(results);
+        };
+
+        fetchArtists();
+        fetchAlbums();
+    }, [data]);
 
     if (error) return <div>Error loading songs</div>;
 
@@ -165,13 +273,13 @@ const SongsManager = () => {
                         {!isLoading &&
                         filteredSongs &&
                         filteredSongs.length > 0 ? (
-                            filteredSongs.map((song) => (
+                            filteredSongs.map((song, index) => (
                                 <TableRow key={song.id}>
                                     <TableCell>{song.id}</TableCell>
                                     <TableCell>{song.title}</TableCell>
                                     <TableCell>{song.duration}</TableCell>
-                                    <TableCell>{song.artist?.name}</TableCell>
-                                    <TableCell>{song.album?.title}</TableCell>
+                                    <TableCell>{artistNames[index]}</TableCell>
+                                    <TableCell>{albumNames[index]}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
                                             <Button

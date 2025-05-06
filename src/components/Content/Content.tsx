@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContextItem from "../ContextItem/ContextItem";
 import Link from "next/link";
 import useSWR from "swr";
@@ -15,6 +15,8 @@ interface ContentProps {
 }
 
 const Content: React.FC<ContentProps> = ({ keyword = null }) => {
+    const [artistNames, setArtistNames] = useState<(string | undefined)[]>([]);
+
     const {
         data: albumsData,
         error: AlbumsError,
@@ -41,6 +43,42 @@ const Content: React.FC<ContentProps> = ({ keyword = null }) => {
         `music/songs/${keyword ? `?search=${keyword}` : ""}`,
         fetcher,
     );
+
+    const GetArtistById = async (id: number): Promise<Artist | undefined> => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/artists/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch artist data");
+            }
+            const artistData: ApiResponse<Artist> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            if (!SongsData?.data) return;
+
+            const promises = SongsData.data
+                .slice(0, 5)
+                .map((item) =>
+                    GetArtistById(item.artist ?? 1).then(
+                        (artist) => artist?.name,
+                    ),
+                );
+
+            const results = await Promise.all(promises);
+            setArtistNames(results);
+            console.log("Artist names:", results);
+        };
+
+        fetchArtists();
+    }, [SongsData]);
 
     if (AlbumsError) return <div>Error when loading albums</div>;
     if (ArtistsError) return <div>Error when loading artists</div>;
@@ -163,12 +201,12 @@ const Content: React.FC<ContentProps> = ({ keyword = null }) => {
                             SongsData?.data &&
                             SongsData?.data
                                 .slice(0, 5)
-                                .map((item) => (
+                                .map((item, index) => (
                                     <ContextItem
                                         key={item.id}
                                         title={item.title}
-                                        artist={item.artist?.name}
-                                        artistId={item.artist?.id}
+                                        artist={artistNames[index]}
+                                        artistId={item.artist}
                                         contextId={item.id ?? 1}
                                         songs={[item]}
                                         type="song"

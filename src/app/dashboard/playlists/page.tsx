@@ -38,10 +38,7 @@ const PlaylistsManager = () => {
     // Filter playlists based on search term
     const filteredPlaylists = data?.data?.filter(
         (playlist) =>
-            playlist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            playlist.description
-                ?.toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
+            playlist.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             playlist.user?.username
                 .toLowerCase()
                 .includes(searchTerm.toLowerCase()),
@@ -163,10 +160,7 @@ const PlaylistsManager = () => {
                                 User
                             </TableHead>
                             <TableHead className="text-(--green-color)">
-                                NUmber of Song
-                            </TableHead>
-                            <TableHead className="text-(--green-color)">
-                                Description
+                                Number of Song
                             </TableHead>
                             <TableHead className="text-right text-(--green-color)">
                                 Active
@@ -180,15 +174,12 @@ const PlaylistsManager = () => {
                             filteredPlaylists.map((playlist) => (
                                 <TableRow key={playlist.id}>
                                     <TableCell>{playlist.id}</TableCell>
-                                    <TableCell>{playlist.title}</TableCell>
+                                    <TableCell>{playlist.name}</TableCell>
                                     <TableCell>
                                         {playlist.user?.username}
                                     </TableCell>
                                     <TableCell>
-                                        {playlist.songs_count}
-                                    </TableCell>
-                                    <TableCell>
-                                        {playlist.description}
+                                        {playlist.songs?.length}
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">

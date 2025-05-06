@@ -1,11 +1,10 @@
 import { Album } from "./album";
-import { Artist } from "./artist";
 
 export interface Song {
     id?: number;
     title: string;
-    artist?: Artist;
-    album?: Album | null;
+    artist?: number;
+    album?: number | null;
     duration: number;
     audio_file?: string;
     release_date?: string | null;
@@ -14,10 +13,10 @@ export interface Song {
 
 export interface CreateSongDto {
     title: string;
-    artist_ids?: number[] | undefined;
-    album_id?: number | null;
-    duration: number;
-    audio_file?: string | undefined;
+    artist?: number | undefined;
+    album?: number | null;
+    duration: number | null;
+    audio_file?: File | undefined;
     release_date?: string | null;
 }
 
@@ -30,7 +29,7 @@ export interface UpdateSongDto {
 }
 
 export interface SongDisplay extends Omit<Song, "created_at" | "updated_at"> {
-    album?: Album | null;
+    albumO?: Album | null;
     formatted_duration?: string;
     formatted_release_date?: string;
 }

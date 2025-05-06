@@ -12,6 +12,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreateSongDto, Song } from "@/types/song";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
+import { fetcher } from "@/lib/api";
+import useSWR from "swr";
+import { ApiResponse } from "@/types/api";
+import { Artist } from "@/types/artist";
 
 interface AddEditSongDialogProps {
     open: boolean;
@@ -28,14 +39,20 @@ export function AddEditSongDialog({
     isEditing,
     onSave,
 }: AddEditSongDialogProps) {
+    const {
+        data,
+        error: errorData,
+        isLoading,
+    } = useSWR<ApiResponse<Artist[]>>("music/artists/", fetcher);
+
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<CreateSongDto>({
         title: "",
-        duration: 0,
-        artist_ids: [],
-        file_url: "",
+        duration: null,
+        artist: undefined,
+        audio_file: undefined,
     });
 
     useEffect(() => {
@@ -44,16 +61,20 @@ export function AddEditSongDialog({
         } else {
             setFormData({
                 title: "",
-                duration: 0,
-                artist_ids: [],
-                file_url: "",
+                duration: null,
+                artist: undefined,
+                audio_file: undefined,
             });
         }
     }, [song, isEditing, open]);
 
+    useEffect(() => {
+        handleChange("audio_file", file as File);
+    }, [file]);
+
     const handleChange = (
         field: keyof CreateSongDto,
-        value: string | boolean,
+        value: string | boolean | number | File,
     ) => {
         setFormData((prev) => ({
             ...prev,
@@ -73,6 +94,8 @@ export function AddEditSongDialog({
             console.log("error", error);
         }
     };
+
+    if (errorData) return <div>Error: {errorData}</div>;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -102,25 +125,46 @@ export function AddEditSongDialog({
                         </Label>
                         <Input
                             id="duration"
-                            type="duration"
-                            placeholder="hh:mm:ss"
-                            value={formData.duration}
+                            type="number"
+                            placeholder="Number of seconds"
+                            value={formData.duration?.toString()}
                             onChange={(e) =>
-                                handleChange("duration", e.target.value)
+                                handleChange(
+                                    "duration",
+                                    parseInt(e.target.value, 10),
+                                )
                             }
                             className="col-span-3"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="artist">Artist</Label>
-                        <Input
-                            id="artist"
-                            value={formData.artist_ids?.join(", ")}
-                            onChange={(e) =>
-                                handleChange("artist_ids", e.target.value)
+                        <Select
+                            value={formData.artist?.toString()}
+                            onValueChange={(value) =>
+                                handleChange("artist", parseInt(value, 10))
                             }
-                            className="col-span-3"
-                        />
+                        >
+                            <SelectTrigger className="col-span-3">
+                                <SelectValue placeholder="Select Artist" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {isLoading ? (
+                                    <SelectItem value="0">
+                                        Loading...
+                                    </SelectItem>
+                                ) : (
+                                    data?.data?.map((artist) => (
+                                        <SelectItem
+                                            key={artist.id}
+                                            value={artist.id?.toString() ?? "1"}
+                                        >
+                                            {artist.name}
+                                        </SelectItem>
+                                    ))
+                                )}
+                            </SelectContent>
+                        </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="file">File</Label>

@@ -3,7 +3,7 @@ import { fetcher } from "@/lib/api";
 import { deleteCookie, getCookie } from "@/lib/cookie";
 import { ApiResponse } from "@/types/api";
 import { User } from "@/types/user";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -21,6 +21,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
+    const pathname = usePathname();
+
     const { data, error, isLoading } = useSWR<ApiResponse<User>>(
         "me/",
         fetcher,
@@ -28,10 +30,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const route = useRouter();
     const [user, setUser] = useState<User | null>(null);
+    const [isChecking, setIsChecking] = useState(true);
 
     const handleLogin = (user: User) => {
         setUser(user);
-        route.push("/");
+        if (user.is_superuser) {
+            route.push("/dashboard");
+        } else {
+            route.push("/");
+        }
     };
 
     const handleLogout = async () => {
@@ -47,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     const checkAuth = async () => {
+        setIsChecking(true);
         const token = getCookie("token");
 
         if (!token) {
@@ -58,8 +66,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         }
     };
 
+    const checkAdmin = () => {
+        if (pathname.startsWith("/dashboard") && !user?.is_superuser) {
+            route.push("/");
+        }
+        setIsChecking(false);
+    };
+
     useEffect(() => {
         checkAuth();
+        checkAdmin();
     });
 
     if (error) return <div>Error loading user data</div>;
@@ -73,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
                 isLoading,
             }}
         >
-            {children}
+            {!isChecking && children}
         </AuthContext.Provider>
     );
 };

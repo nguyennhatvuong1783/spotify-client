@@ -61,7 +61,7 @@ export default function Login() {
         if (loginResponseData.errors) {
             Toast.fire({
                 icon: "error",
-                title: "Login failed",
+                title: "Incorrect username or password",
             });
 
             const errors = loginResponseData.errors;

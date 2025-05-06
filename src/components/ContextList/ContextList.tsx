@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContextItem from "../ContextItem/ContextItem";
 import { Artist } from "@/types/artist";
 import { Album } from "@/types/album";
@@ -12,11 +12,11 @@ interface ContextListProps {
 }
 
 const ContextList: React.FC<ContextListProps> = ({ contextKey }) => {
+    const [artistNames, setArtistNames] = useState<(string | undefined)[]>([]);
+
     const { data, error, isLoading } = useSWR<
         ApiResponse<Artist[] | Album[] | Song[]>
     >(`music/${contextKey}/`, fetcher);
-
-    if (error) return <div>{`Error when loading ${contextKey}`}</div>;
 
     const titles: Record<string, string> = {
         artists: "Popular artists",
@@ -25,6 +25,45 @@ const ContextList: React.FC<ContextListProps> = ({ contextKey }) => {
     };
 
     const displayTitle = titles[contextKey];
+
+    const GetArtistById = async (id: number): Promise<Artist | undefined> => {
+        if (contextKey !== "songs") return;
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/artists/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch artist data");
+            }
+            const artistData: ApiResponse<Artist> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            if (contextKey !== "songs") return;
+
+            if (!data?.data) return;
+
+            const promises = data.data.map((item) =>
+                GetArtistById((item as Song).artist ?? 1).then(
+                    (artist) => artist?.name,
+                ),
+            );
+
+            const results = await Promise.all(promises);
+            setArtistNames(results);
+            console.log("Artist names:", results);
+        };
+
+        fetchArtists();
+    }, [data]);
+
+    if (error) return <div>{`Error when loading ${contextKey}`}</div>;
 
     return (
         <div className="my-5 mb-10 overflow-hidden px-3">
@@ -44,12 +83,12 @@ const ContextList: React.FC<ContextListProps> = ({ contextKey }) => {
                           />
                       ))
                     : !isLoading && data?.data && contextKey == "songs"
-                      ? data?.data.map((song) => (
+                      ? data?.data.map((song, index) => (
                             <ContextItem
                                 key={song.id}
                                 title={(song as Song).title}
-                                artist={(song as Song).artist?.name}
-                                artistId={(song as Song).artist?.id}
+                                artist={artistNames[index]}
+                                artistId={(song as Song).artist}
                                 contextId={song.id ?? 1}
                                 songs={[song as Song]}
                                 type="song"
