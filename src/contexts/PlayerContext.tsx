@@ -52,7 +52,6 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [queue, setQueue] = useState<Song[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [shuffleQueue, setShuffleQueue] = useState<Song[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
     const [playMode, setPlayMode] = useState<PlayMode>("song");

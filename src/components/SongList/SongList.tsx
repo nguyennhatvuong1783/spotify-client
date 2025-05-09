@@ -64,7 +64,7 @@ const SongList: React.FC<SongListProps> = ({
                                 <span className="text-base text-(--text-color)">
                                     {item.title}
                                 </span>
-                                <span>{item.artist?.name}</span>
+                                <span>{item.artist}</span>
                             </div>
                             <span className="col-span-2">{`${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? "0" + (item.duration % 60) : item.duration % 60}`}</span>
                         </div>

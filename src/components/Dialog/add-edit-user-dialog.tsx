@@ -39,9 +39,8 @@ export function AddEditUserDialog({
     const [formData, setFormData] = useState<User>({
         username: "",
         email: "",
-        phone: "",
-        account_type: "admin",
-        is_active: true,
+        is_superuser: false,
+        is_premium: false,
     });
 
     useEffect(() => {
@@ -51,9 +50,8 @@ export function AddEditUserDialog({
             setFormData({
                 username: "",
                 email: "",
-                phone: "",
-                account_type: "admin",
-                is_active: true,
+                is_superuser: false,
+                is_premium: false,
             });
         }
     }, [user, isEditing, open]);
@@ -106,58 +104,14 @@ export function AddEditUserDialog({
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="phone">Phone number</Label>
-                        <Input
-                            id="phone"
-                            value={formData.phone}
-                            onChange={(e) =>
-                                handleChange("phone", e.target.value)
-                            }
-                            className="col-span-3"
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="accountType">Account type</Label>
-                        <Select
-                            value={formData.account_type}
-                            onValueChange={(value) =>
-                                handleChange(
-                                    "account_type",
-                                    value as
-                                        | "free"
-                                        | "premium"
-                                        | "admin"
-                                        | "artist",
-                                )
-                            }
-                        >
-                            <SelectTrigger className="col-span-3">
-                                <SelectValue placeholder="Chọn loại tài khoản" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="admin">Admin</SelectItem>
-                                <SelectItem value="free">Free</SelectItem>
-                                <SelectItem value="premium">Premium</SelectItem>
-                                <SelectItem value="artist">Artist</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        {/* Select component for account type */}
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="isActive" className="text-right">
                             Status
                         </Label>
-                        <div className="col-span-3 flex items-center space-x-2">
-                            <Switch
-                                id="isActive"
-                                checked={formData.is_active}
-                                onCheckedChange={(checked) =>
-                                    handleChange("is_active", checked)
-                                }
-                            />
-                            <Label htmlFor="isActive">
-                                {formData.is_active ? "Active" : "Inactive"}
-                            </Label>
-                        </div>
+                        {/* Switch component for user status */}
                     </div>
                 </div>
                 <DialogFooter>

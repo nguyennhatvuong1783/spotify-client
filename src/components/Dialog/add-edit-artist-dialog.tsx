@@ -34,9 +34,9 @@ export function AddEditArtistDialog({
 
     const [formData, setFormData] = useState<CreateArtistDto>({
         name: "",
-        biography: "",
-        image_url: "",
-        is_verified: true,
+        bio: "",
+        profile_picture: "",
+        verified: true,
     });
 
     useEffect(() => {
@@ -45,9 +45,9 @@ export function AddEditArtistDialog({
         } else {
             setFormData({
                 name: "",
-                biography: "",
-                image_url: "",
-                is_verified: true,
+                bio: "",
+                profile_picture: "",
+                verified: true,
             });
         }
         setFile(null);
@@ -104,9 +104,9 @@ export function AddEditArtistDialog({
                         </Label>
                         <Input
                             id="biography"
-                            value={formData.biography ?? ""}
+                            value={formData.bio ?? ""}
                             onChange={(e) =>
-                                handleChange("biography", e.target.value)
+                                handleChange("bio", e.target.value)
                             }
                             className="col-span-3"
                         />
@@ -131,13 +131,13 @@ export function AddEditArtistDialog({
                         <div className="col-span-3 flex items-center space-x-2">
                             <Switch
                                 id="isVerified"
-                                checked={formData.is_verified}
+                                checked={formData.verified}
                                 onCheckedChange={(checked) =>
-                                    handleChange("is_verified", checked)
+                                    handleChange("verified", checked)
                                 }
                             />
                             <Label htmlFor="isVerified">
-                                {formData.is_verified
+                                {formData.verified
                                     ? "Verified"
                                     : "Not verified"}
                             </Label>

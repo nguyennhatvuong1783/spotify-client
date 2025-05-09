@@ -66,7 +66,7 @@ export function ChatScreen({ user, onBack }: ChatScreenProps) {
                 </Button>
                 <Avatar className="h-8 w-8">
                     <AvatarImage
-                        src={user.image_url || "/placeholder.svg"}
+                        src={user.profile_picture || "/placeholder.svg"}
                         alt={user.username}
                     />
                     <AvatarFallback>

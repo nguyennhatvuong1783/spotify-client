@@ -153,10 +153,7 @@ const PlayerBar = () => {
                 {currentSong && (
                     <>
                         <Image
-                            src={
-                                currentSong.album?.cover_image ??
-                                "https://www.shyamh.com/images/blog/music.jpg"
-                            }
+                            src={"https://www.shyamh.com/images/blog/music.jpg"}
                             alt="Image"
                             width={56}
                             height={56}
@@ -167,7 +164,7 @@ const PlayerBar = () => {
                                 {currentSong.title}
                             </span>
                             <span className="text-xs text-(--secondary-text-color)">
-                                {currentSong.artist?.name}
+                                {currentSong.artist}
                             </span>
                         </div>
                         <div className="ml-4">

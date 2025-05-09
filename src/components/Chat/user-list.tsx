@@ -25,7 +25,10 @@ export function UserList({ users, onUserSelect }: UserListProps) {
                         >
                             <Avatar>
                                 <AvatarImage
-                                    src={user.image_url || "/placeholder.svg"}
+                                    src={
+                                        user.profile_picture ||
+                                        "/placeholder.svg"
+                                    }
                                     alt={user.username}
                                 />
                                 <AvatarFallback>

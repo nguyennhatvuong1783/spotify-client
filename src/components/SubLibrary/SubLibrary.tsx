@@ -22,7 +22,6 @@ const SubLibrary: React.FC<SubLibraryProps> = ({
         const data: CreatePlaylistDto = {
             name: "My Playlist",
         };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const responseData = await createPlaylist(data);
         mutate("playlists");
     };

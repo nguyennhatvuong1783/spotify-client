@@ -45,7 +45,6 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
         }
 
         selectedPlaylistIds.forEach(async (playlistId) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const responseData = await addSongToPlaylist(
                 requestData,
                 playlistId as number,

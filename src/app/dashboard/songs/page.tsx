@@ -88,8 +88,8 @@ const SongsManager = () => {
             try {
                 const formData = new FormData();
                 formData.append("title", song.title);
-                formData.append("duration", song.duration);
-                formData.append("artist", song.artist);
+                formData.append("duration", song.duration?.toString() || "");
+                formData.append("artist", song.artist?.toString() || "");
                 formData.append("audio_file", song.audio_file as File);
 
                 const token = getCookie("token");

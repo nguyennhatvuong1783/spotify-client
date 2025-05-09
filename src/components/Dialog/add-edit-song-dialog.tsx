@@ -57,7 +57,10 @@ export function AddEditSongDialog({
 
     useEffect(() => {
         if (song && isEditing) {
-            setFormData(song);
+            setFormData({
+                ...song,
+                audio_file: undefined,
+            });
         } else {
             setFormData({
                 title: "",

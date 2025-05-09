@@ -115,12 +115,10 @@ const Profile = () => {
     });
 
     const onSubmitProfile = async (data: RawProfileInput) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const profileData: UpdateProfileDto = {
             email: data.email,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const editProfileResponseData: ApiResponse<User> =
             await editProfile(profileData);
 
@@ -169,7 +167,6 @@ const Profile = () => {
             new_password_confirmation: data.new_password_confirmation,
         };
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dataChangePassword: any = await changePassword(passwordData);
 
         const Toast = MySwal.mixin({

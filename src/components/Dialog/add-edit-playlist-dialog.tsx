@@ -32,8 +32,7 @@ export function AddEditPlaylistDialog({
     const [error, setError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState<Playlist>({
-        title: "",
-        description: "",
+        name: "",
         user: null,
         image_url: null,
     });
@@ -43,8 +42,7 @@ export function AddEditPlaylistDialog({
             setFormData(playlist);
         } else {
             setFormData({
-                title: "",
-                description: "",
+                name: "",
                 user: null,
                 image_url: null,
             });
@@ -86,23 +84,9 @@ export function AddEditPlaylistDialog({
                         </Label>
                         <Input
                             id="title"
-                            value={formData.title}
+                            value={formData.name}
                             onChange={(e) =>
-                                handleChange("title", e.target.value)
-                            }
-                            className="col-span-3"
-                        />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="description" className="text-right">
-                            Description
-                        </Label>
-                        <Input
-                            id="description"
-                            type="area"
-                            value={formData.description ?? ""}
-                            onChange={(e) =>
-                                handleChange("description", e.target.value)
+                                handleChange("name", e.target.value)
                             }
                             className="col-span-3"
                         />
