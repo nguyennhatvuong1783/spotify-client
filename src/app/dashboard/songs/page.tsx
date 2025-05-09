@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { formatTime } from "@/lib/utils";
 
 const SongsManager = () => {
     const MySwal = withReactContent(Swal);
@@ -91,6 +92,8 @@ const SongsManager = () => {
                 formData.append("duration", song.duration?.toString() || "");
                 formData.append("artist", song.artist?.toString() || "");
                 formData.append("audio_file", song.audio_file as File);
+
+                console.log("FormData: ", formData);
 
                 const token = getCookie("token");
                 const response = await fetch(
@@ -277,7 +280,9 @@ const SongsManager = () => {
                                 <TableRow key={song.id}>
                                     <TableCell>{song.id}</TableCell>
                                     <TableCell>{song.title}</TableCell>
-                                    <TableCell>{song.duration}</TableCell>
+                                    <TableCell>
+                                        {formatTime(song.duration)}
+                                    </TableCell>
                                     <TableCell>{artistNames[index]}</TableCell>
                                     <TableCell>{albumNames[index]}</TableCell>
                                     <TableCell className="text-right">

@@ -17,6 +17,8 @@ import {
 import Image from "next/image";
 import { formatTime } from "@/lib/utils";
 import AddSongToPlaylistModel from "../AddSongToPlaylistDModel/AddSongToPlaylistModel";
+import { ApiResponse } from "@/types/api";
+import { Artist } from "@/types/artist";
 
 const PlayerBar = () => {
     const [valuePlayer, setValuePlayer] = useState<number>(0);
@@ -29,6 +31,7 @@ const PlayerBar = () => {
     const [isSeeking, setIsSeeking] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
+    const [artist, setArtist] = useState<Artist | undefined>();
 
     const {
         currentSong,
@@ -136,6 +139,31 @@ const PlayerBar = () => {
             setIsMuted(true);
         }
     }, [valuePlayer, valueVolume]);
+    const GetArtistById = async (id: number): Promise<Artist | undefined> => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/artists/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch artist data");
+            }
+            const artistData: ApiResponse<Artist> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            if (!currentSong) return;
+            const results = await GetArtistById(currentSong.artist ?? 1);
+            setArtist(results);
+        };
+
+        fetchArtists();
+    }, [currentSong]);
 
     return (
         <div className="grid h-18 grid-cols-13 items-center">
@@ -164,7 +192,7 @@ const PlayerBar = () => {
                                 {currentSong.title}
                             </span>
                             <span className="text-xs text-(--secondary-text-color)">
-                                {currentSong.artist}
+                                {artist?.name}
                             </span>
                         </div>
                         <div className="ml-4">

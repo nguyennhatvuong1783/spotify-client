@@ -1,6 +1,10 @@
 "use client";
+import { fetcher } from "@/lib/api";
+import { ApiResponse } from "@/types/api";
 import { Song } from "@/types/song";
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
+import { set } from "react-hook-form";
+import useSWR from "swr";
 
 type PlayMode = "song" | "album" | "playlist" | "artist";
 type RepeatMode = "none" | "all" | "one";
@@ -54,7 +58,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     const [queue, setQueue] = useState<Song[]>([]);
     const [shuffleQueue, setShuffleQueue] = useState<Song[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
-    const [playMode, setPlayMode] = useState<PlayMode>("song");
+    const [playMode, setPlayMode] = useState<PlayMode>("playlist");
     const [repeatMode, setRepeatMode] = useState<RepeatMode>("none");
     const [isShuffled, setIsShuffled] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
@@ -65,6 +69,22 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     }>({});
 
     const currentSong = currentIndex >= 0 ? queue[currentIndex] : null;
+
+    const {
+        data: songsData,
+        error: songsError,
+        isLoading: isSongsLoading,
+    } = useSWR<ApiResponse<Song[]>>(
+        playMode === "song" ? "music/songs/" : null,
+        fetcher,
+    );
+
+    useEffect(() => {
+        if (!isSongsLoading && songsData && playMode === "song") {
+            setQueue(songsData.data ?? []);
+        }
+        console.log("songsData", songsData);
+    }, [isSongsLoading, songsData, playMode]);
 
     // Phát một bài hát đơn
     const playSong = useCallback((song: Song) => {
@@ -244,6 +264,8 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             }
         });
     }, []);
+
+    if (songsError) return <div>Error loading songs</div>;
 
     return (
         <PlayerContext.Provider

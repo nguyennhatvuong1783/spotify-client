@@ -1,8 +1,16 @@
+"use client";
+
 import { Song } from "@/types/song";
 import { Clock } from "../icons/Icons";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlayer } from "@/hooks/usePlayer";
+import { Artist } from "@/types/artist";
+import { ApiResponse } from "@/types/api";
+import { useEffect, useState } from "react";
+import { formatTime } from "@/lib/utils";
+import { deleteSongInPlaylist } from "@/lib/callApi";
+import { mutate } from "swr";
 
 interface SongListProps {
     contextId: number;
@@ -22,6 +30,8 @@ const SongList: React.FC<SongListProps> = ({
 
     const { playPlaylist } = usePlayer();
 
+    const [artistNames, setArtistNames] = useState<(string | undefined)[]>([]);
+
     const handleDoubleClick = (index: number) => {
         if (!user) {
             router.push("/login");
@@ -36,6 +46,45 @@ const SongList: React.FC<SongListProps> = ({
             },
             index,
         );
+    };
+
+    const GetArtistById = async (id: number): Promise<Artist | undefined> => {
+        try {
+            const response = await fetch(
+                `http://localhost:8000/api/music/artists/${id}/`,
+            );
+            if (!response.ok) {
+                throw new Error("Failed to fetch artist data");
+            }
+            const artistData: ApiResponse<Artist> = await response.json();
+            return artistData.data;
+        } catch (error) {
+            console.error(error);
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            if (!songs) return;
+
+            const promises = songs.map((item) =>
+                GetArtistById(item.artist ?? 1).then((artist) => artist?.name),
+            );
+
+            const results = await Promise.all(promises);
+            setArtistNames(results);
+        };
+
+        fetchArtists();
+    }, [songs]);
+
+    const handleDeleteSong = async (songId: number) => {
+        const data = {
+            songs: [songId],
+        };
+        const responseDelete = await deleteSongInPlaylist(data, contextId);
+        mutate(`music/playlists/${contextId}/`);
     };
 
     return (
@@ -54,7 +103,7 @@ const SongList: React.FC<SongListProps> = ({
                         onDoubleClick={() => handleDoubleClick(index)}
                     >
                         <div
-                            className="grid h-14 cursor-pointer grid-cols-22 items-center gap-4 rounded text-sm font-medium text-(--secondary-text-color) focus-within:!bg-[#5a5a5a] hover:bg-[#2a2a2a]"
+                            className="group grid h-14 cursor-pointer grid-cols-22 items-center gap-4 rounded text-sm font-medium text-(--secondary-text-color) focus-within:!bg-[#5a5a5a] hover:bg-[#2a2a2a]"
                             tabIndex={0}
                         >
                             <span className="pr-1 text-right text-lg">
@@ -64,9 +113,23 @@ const SongList: React.FC<SongListProps> = ({
                                 <span className="text-base text-(--text-color)">
                                     {item.title}
                                 </span>
-                                <span>{item.artist}</span>
+                                <span>{artistNames[index]}</span>
                             </div>
-                            <span className="col-span-2">{`${Math.floor(item.duration / 60)}:${item.duration % 60 < 10 ? "0" + (item.duration % 60) : item.duration % 60}`}</span>
+                            <span
+                                className={`col-span-2 ${type === "playlist" && "flex items-center justify-center"}`}
+                            >
+                                {formatTime(item.duration)}
+                                {type === "playlist" && (
+                                    <h1
+                                        className="mx-6 font-bold opacity-0 group-hover:opacity-100 hover:scale-105 hover:text-red-500"
+                                        onClick={() =>
+                                            handleDeleteSong(item.id as number)
+                                        }
+                                    >
+                                        X
+                                    </h1>
+                                )}
+                            </span>
                         </div>
                     </li>
                 ))}

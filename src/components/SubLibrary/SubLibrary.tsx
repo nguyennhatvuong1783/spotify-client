@@ -19,11 +19,8 @@ const SubLibrary: React.FC<SubLibraryProps> = ({
     const { user } = useAuth();
 
     const handleCreatePlaylist = async () => {
-        const data: CreatePlaylistDto = {
-            name: "My Playlist",
-        };
-        const responseData = await createPlaylist(data);
-        mutate("playlists");
+        const responseData = await createPlaylist();
+        mutate("music/playlists/");
     };
 
     return (

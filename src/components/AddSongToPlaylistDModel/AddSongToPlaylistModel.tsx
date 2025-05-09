@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Check, Plus, Search } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import Image from "next/image";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { ApiResponse } from "@/types/api";
 import { fetcher } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,7 +32,7 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
 
     const handleAddToPlaylist = async () => {
         const requestData = {
-            song_ids: [songId],
+            songs: [songId],
         };
 
         const selectedPlaylistIds = playlists
@@ -49,6 +49,7 @@ const AddSongToPlaylistModel: React.FC<AddSongToPlaylistModelProps> = ({
                 requestData,
                 playlistId as number,
             );
+            mutate(`music/playlists/${playlistId}/`);
         });
         onClose();
     };

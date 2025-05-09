@@ -21,7 +21,7 @@ export async function fetchData<T>(
             `Bearer ${token}`;
     }
 
-    if (data && method !== "DELETE") {
+    if (data) {
         config.body = JSON.stringify(data);
     }
 

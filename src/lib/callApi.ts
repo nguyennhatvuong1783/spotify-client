@@ -9,7 +9,11 @@ import {
 
 import { fetchData } from "./api";
 import { ApiResponse } from "@/types/api";
-import { CreatePlaylistDto, Playlist } from "@/types/playlist";
+import {
+    CreatePlaylistDto,
+    Playlist,
+    UpdatePlaylistDto,
+} from "@/types/playlist";
 
 export const login = async (data: LoginUserDto): Promise<AuthUser> => {
     return await fetchData("login/", data, "POST");
@@ -39,15 +43,27 @@ export const changePassword = async (data: PasswordChangeDto) => {
     return await fetchData("users/change-password", data, "POST");
 };
 
-export const createPlaylist = async (
-    data: CreatePlaylistDto,
+export const createPlaylist = async (): Promise<ApiResponse<Playlist>> => {
+    return await fetchData("music/playlists/", null, "POST");
+};
+
+export const updatePlaylist = async (
+    data: UpdatePlaylistDto,
+    id: number,
 ): Promise<ApiResponse<Playlist>> => {
-    return await fetchData("playlists", data, "POST");
+    return await fetchData(`music/playlists/${id}/`, data, "PATCH");
+};
+
+export const deleteSongInPlaylist = async (
+    data: { songs: number[] },
+    id: number,
+): Promise<ApiResponse<Playlist>> => {
+    return await fetchData(`music/playlists/${id}/`, data, "DELETE");
 };
 
 export const addSongToPlaylist = async (
-    data: { song_ids: number[] },
+    data: { songs: number[] },
     playlistId: number,
 ): Promise<ApiResponse<Playlist>> => {
-    return await fetchData(`playlists/${playlistId}/songs`, data, "POST");
+    return await fetchData(`music/playlists/${playlistId}/`, data, "POST");
 };

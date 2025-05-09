@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import PlayButton from "../Buttons/PlayButton";
 import { AddIcon, ListIcon, MoreIcon } from "../icons/Icons";
@@ -7,6 +9,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePlayer } from "@/hooks/usePlayer";
 import { formatDuration } from "@/lib/utils";
 import { Song } from "@/types/song";
+import { useState } from "react";
+import { EditPlaylistDialog } from "../Dialog/edit-playlist-dialog";
+import { UpdatePlaylistDto } from "@/types/playlist";
+import { updatePlaylist } from "@/lib/callApi";
+import { mutate } from "swr";
 
 interface ContextHeaderProps {
     title: string;
@@ -37,6 +44,8 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
     const { user } = useAuth();
     const { playPlaylist } = usePlayer();
 
+    const [open, setOpen] = useState(false);
+
     const handleClickButtonPlay = () => {
         if (!user) {
             router.push("/login");
@@ -51,6 +60,12 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
             },
             0,
         );
+    };
+
+    const handleUpdataPlaylist = async (data: UpdatePlaylistDto) => {
+        const responseData = await updatePlaylist(data, contextId);
+        mutate(`music/playlists/${contextId}/`);
+        mutate("music/playlists/");
     };
 
     return (
@@ -82,10 +97,14 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
                             }[type]
                         }
                     </p>
-                    <h1 className="cursor-default text-6xl/tight font-extrabold">
+                    <h1
+                        className={`w-fit cursor-default text-6xl/tight font-extrabold ${type === "playlist" ? "cursor-pointer" : ""}`}
+                        onClick={() => {
+                            if (type === "playlist") setOpen(true);
+                        }}
+                    >
                         {title}
                     </h1>
-                    {/* <AutoTextSize text="BẬT NÓ LÊN" /> */}
                     <div className="mt-3 flex items-center gap-1 truncate">
                         <Image
                             src={SecImgUrl}
@@ -133,6 +152,14 @@ const ContextHeader: React.FC<ContextHeaderProps> = ({
                     <ListIcon className="h-4 w-4" />
                 </div>
             </div>
+            <EditPlaylistDialog
+                open={open}
+                onOpenChange={setOpen}
+                initialName={title}
+                onSave={(data) => {
+                    handleUpdataPlaylist(data);
+                }}
+            />
         </div>
     );
 };

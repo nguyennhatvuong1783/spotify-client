@@ -130,11 +130,11 @@ export function AddEditSongDialog({
                             id="duration"
                             type="number"
                             placeholder="Number of seconds"
-                            value={formData.duration?.toString()}
+                            value={formData.duration?.toString() || ""}
                             onChange={(e) =>
                                 handleChange(
                                     "duration",
-                                    parseInt(e.target.value, 10),
+                                    parseInt(e.target.value) || 0,
                                 )
                             }
                             className="col-span-3"
