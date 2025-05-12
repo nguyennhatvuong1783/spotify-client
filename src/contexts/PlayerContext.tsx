@@ -59,7 +59,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     const [shuffleQueue, setShuffleQueue] = useState<Song[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
     const [playMode, setPlayMode] = useState<PlayMode>("playlist");
-    const [repeatMode, setRepeatMode] = useState<RepeatMode>("none");
+    const [repeatMode, setRepeatMode] = useState<RepeatMode>("all");
     const [isShuffled, setIsShuffled] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [currentContext, setCurrentContext] = useState<{
@@ -74,10 +74,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         data: songsData,
         error: songsError,
         isLoading: isSongsLoading,
-    } = useSWR<ApiResponse<Song[]>>(
-        playMode === "song" ? "music/songs/" : null,
-        fetcher,
-    );
+    } = useSWR<ApiResponse<Song[]>>("music/songs/", fetcher);
 
     useEffect(() => {
         if (!isSongsLoading && songsData && playMode === "song") {
@@ -88,8 +85,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Phát một bài hát đơn
     const playSong = useCallback((song: Song) => {
-        setQueue([song]);
-        setCurrentIndex(0);
+        setCurrentIndex((song.id ?? 2) - 1);
         setPlayMode("song");
         setCurrentContext({});
         setIsPlaying(true);
@@ -177,7 +173,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             if (prev < queue.length - 1) return prev + 1;
 
             // Nếu hết queue
-            if (repeatMode === "all" || playMode === "song") {
+            if (repeatMode === "all") {
                 // Lặp lại từ đầu
                 return 0;
             } else {
@@ -193,7 +189,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         if (!isPlaying) setIsPlaying(true);
         setCurrentIndex((prev) => {
             // Nếu đang ở đầu queue và chế độ lặp tất cả
-            if ((prev <= 0 && repeatMode === "all") || playMode === "song") {
+            if (prev <= 0 && repeatMode === "all") {
                 return queue.length - 1;
             }
             // Nếu không phải bài đầu tiên
