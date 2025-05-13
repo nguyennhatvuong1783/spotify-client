@@ -71,7 +71,7 @@ const ContextItem: React.FC<ContextItemProps> = ({
                     alt="Image"
                     width={500}
                     height={500}
-                    className="aspect-square overflow-hidden rounded-md object-cover"
+                    className={`aspect-square overflow-hidden object-cover ${type === "artist" ? "rounded-full" : "rounded-md"}`}
                 />
                 <PlayButton
                     className="absolute right-2 bottom-0 opacity-0 shadow-[0px_8px_15px_rgba(0,0,0,0.4)] group-hover:-translate-y-2 group-hover:opacity-100"

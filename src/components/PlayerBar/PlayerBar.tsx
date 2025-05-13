@@ -12,6 +12,7 @@ import {
     Previous,
     Queue,
     Repeat,
+    RepeatOne,
     Shuffle,
 } from "../icons/Icons";
 import Image from "next/image";
@@ -41,6 +42,10 @@ const PlayerBar = () => {
         playNext,
         playPrevious,
         seekTo,
+        isShuffled,
+        toggleShuffle,
+        repeatMode,
+        toggleRepeat,
     } = usePlayer();
 
     // Xử lý on/off mute khi bấm vào volume icon
@@ -175,6 +180,7 @@ const PlayerBar = () => {
                     onEnded={playNext}
                     hidden
                     autoPlay={isPlaying}
+                    loop={repeatMode === "one"}
                 />
             )}
             <div className="col-span-4 flex items-center">
@@ -213,7 +219,8 @@ const PlayerBar = () => {
             <div className="col-span-5 flex flex-col items-center justify-center gap-2">
                 <div className="flex items-center justify-center gap-2">
                     <Shuffle
-                        className={`m-2 h-4 w-4 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"}`}
+                        className={`m-2 h-4 w-4 cursor-pointer hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"} ${isShuffled ? "text-(--green-color)" : "text-(--secondary-text-color)"}`}
+                        onClick={toggleShuffle}
                     />
                     <Previous
                         className={`m-2 h-4 w-4 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"}`}
@@ -233,9 +240,17 @@ const PlayerBar = () => {
                         className={`m-2 h-4 w-4 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"}`}
                         onClick={playNext}
                     />
-                    <Repeat
-                        className={`m-2 h-4 w-4 cursor-pointer text-(--secondary-text-color) hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"}`}
-                    />
+                    {repeatMode === "one" ? (
+                        <RepeatOne
+                            className={`m-2 h-4 w-4 cursor-pointer text-(--green-color) hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"}`}
+                            onClick={toggleRepeat}
+                        />
+                    ) : (
+                        <Repeat
+                            className={`m-2 h-4 w-4 cursor-pointer hover:scale-105 hover:brightness-150 active:scale-100 active:brightness-80 ${!currentSong && "pointer-events-none brightness-30"} ${repeatMode === "all" ? "text-(--green-color)" : "text-(--secondary-text-color)"}`}
+                            onClick={toggleRepeat}
+                        />
+                    )}
                 </div>
                 <div className="flex w-full items-center justify-center gap-2 text-xs font-medium text-(--secondary-text-color)">
                     <span className="cursor-default">

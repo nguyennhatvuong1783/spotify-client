@@ -3,7 +3,6 @@ import { fetcher } from "@/lib/api";
 import { ApiResponse } from "@/types/api";
 import { Song } from "@/types/song";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { set } from "react-hook-form";
 import useSWR from "swr";
 
 type PlayMode = "song" | "album" | "playlist" | "artist";
@@ -59,7 +58,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     const [shuffleQueue, setShuffleQueue] = useState<Song[]>([]);
     const [currentIndex, setCurrentIndex] = useState<number>(-1);
     const [playMode, setPlayMode] = useState<PlayMode>("playlist");
-    const [repeatMode, setRepeatMode] = useState<RepeatMode>("all");
+    const [repeatMode, setRepeatMode] = useState<RepeatMode>("none");
     const [isShuffled, setIsShuffled] = useState<boolean>(false);
     const [currentTime, setCurrentTime] = useState<number>(0);
     const [currentContext, setCurrentContext] = useState<{
@@ -169,6 +168,15 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
             // Nếu đang ở chế độ repeat một bài
             if (repeatMode === "one") return prev;
 
+            // Nếu đang bật shuffle
+            if (isShuffled && queue.length > 1) {
+                let nextIndex;
+                do {
+                    nextIndex = Math.floor(Math.random() * queue.length);
+                } while (nextIndex === prev && queue.length > 1);
+                return nextIndex;
+            }
+
             // Nếu còn bài tiếp theo trong queue
             if (prev < queue.length - 1) return prev + 1;
 
@@ -182,22 +190,32 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
                 return prev;
             }
         });
-    }, [repeatMode, queue, playMode, isPlaying]);
+    }, [repeatMode, queue, playMode, isPlaying, isShuffled]);
 
     // Bài trước đó
     const playPrevious = useCallback(() => {
         if (!isPlaying) setIsPlaying(true);
         setCurrentIndex((prev) => {
+            // Nếu đang bật shuffle
+            if (isShuffled && queue.length > 1) {
+                let prevIndex;
+                do {
+                    prevIndex = Math.floor(Math.random() * queue.length);
+                } while (prevIndex === prev && queue.length > 1);
+                return prevIndex;
+            }
             // Nếu đang ở đầu queue và chế độ lặp tất cả
             if (prev <= 0 && repeatMode === "all") {
                 return queue.length - 1;
             }
+            // Nếu đang ở chế độ repeat một bài
+            if (repeatMode === "one") return prev;
             // Nếu không phải bài đầu tiên
             if (prev > 0) return prev - 1;
             // Mặc định trở về đầu
             return 0;
         });
-    }, [repeatMode, queue, playMode, isPlaying]);
+    }, [repeatMode, queue, playMode, isPlaying, isShuffled]);
 
     // Seek đến thời gian cụ thể
     const seekTo = useCallback((time: number) => {
@@ -206,54 +224,18 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Bật/tắt shuffle
     const toggleShuffle = useCallback(() => {
-        if (isShuffled) {
-            // Nếu đang shuffle -> trở về queue gốc
-            setQueue(shuffleQueue);
-            // Tìm lại vị trí bài hát hiện tại trong queue gốc
-            if (currentSong) {
-                const newIndex = shuffleQueue.findIndex(
-                    (song) => song.id === currentSong.id,
-                );
-                setCurrentIndex(newIndex >= 0 ? newIndex : 0);
-            }
-        } else {
-            // Nếu chưa shuffle -> tạo queue mới xáo trộn
-            const shuffledQueue = [...queue];
-            // Xáo trộn Fisher-Yates algorithm
-            for (let i = shuffledQueue.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledQueue[i], shuffledQueue[j]] = [
-                    shuffledQueue[j],
-                    shuffledQueue[i],
-                ];
-            }
-            setQueue(shuffledQueue);
-            // Giữ nguyên bài hát hiện tại ở đầu queue
-            if (currentSong) {
-                const currentSongIndex = shuffledQueue.findIndex(
-                    (song) => song.id === currentSong.id,
-                );
-                if (currentSongIndex > 0) {
-                    [shuffledQueue[0], shuffledQueue[currentSongIndex]] = [
-                        shuffledQueue[currentSongIndex],
-                        shuffledQueue[0],
-                    ];
-                }
-                setCurrentIndex(0);
-            }
-        }
         setIsShuffled(!isShuffled);
-    }, [isShuffled, queue, shuffleQueue, currentSong]);
+    }, [isShuffled]);
 
     // Chuyển đổi chế độ repeat
     const toggleRepeat = useCallback(() => {
         setRepeatMode((prev) => {
             switch (prev) {
                 case "none":
-                    return "one";
-                case "one":
                     return "all";
                 case "all":
+                    return "one";
+                case "one":
                     return "none";
                 default:
                     return "none";
