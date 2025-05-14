@@ -30,7 +30,7 @@ const ContextList: React.FC<ContextListProps> = ({ contextKey }) => {
         if (contextKey !== "songs") return;
         try {
             const response = await fetch(
-                `http://localhost:8000/api/music/artists/${id}/`,
+                `http://43.207.118.139:8000/api/music/artists/${id}/`,
             );
             if (!response.ok) {
                 throw new Error("Failed to fetch artist data");

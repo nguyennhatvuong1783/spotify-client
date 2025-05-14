@@ -97,7 +97,7 @@ const SongsManager = () => {
 
                 const token = getCookie("token");
                 const response = await fetch(
-                    "http://localhost:8000/api/music/songs/",
+                    "http://43.207.118.139:8000/api/music/songs/",
                     {
                         method: "POST",
                         body: formData,
@@ -151,7 +151,7 @@ const SongsManager = () => {
     const GetArtistById = async (id: number): Promise<Artist | undefined> => {
         try {
             const response = await fetch(
-                `http://localhost:8000/api/music/artists/${id}/`,
+                `http://43.207.118.139:8000/api/music/artists/${id}/`,
             );
             if (!response.ok) {
                 throw new Error("Failed to fetch artist data");
@@ -167,7 +167,7 @@ const SongsManager = () => {
     const GetAlbumById = async (id: number): Promise<Album | undefined> => {
         try {
             const response = await fetch(
-                `http://localhost:8000/api/music/albums/${id}/`,
+                `http://43.207.118.139:8000/api/music/albums/${id}/`,
             );
             if (!response.ok) {
                 throw new Error("Failed to fetch album data");

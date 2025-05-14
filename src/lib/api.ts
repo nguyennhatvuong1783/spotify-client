@@ -1,6 +1,6 @@
 import { getCookie } from "./cookie";
 
-const API_URL = "http://127.0.0.1:8000/api/";
+const API_URL = "http://43.207.118.139:8000/api/";
 
 type Method = "POST" | "PATCH" | "DELETE";
 
